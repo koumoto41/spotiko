@@ -12,10 +12,6 @@ class TokenController extends Controller
 {
     public function get_token() {
 
-
-        var_dump(Config('spotify.CLIENT_ID'));
-        exit;
-
         $session = new SpotifyWebAPI\Session(
             Config('spotify.CLIENT_ID'),
             Config('spotify.CLIENT_SECRET'),
@@ -28,11 +24,18 @@ class TokenController extends Controller
             $session->requestAccessToken($_GET['code']);
             $api->setAccessToken($session->getAccessToken());
 
-            print_r($api->me());
+            $option = [
+                'limit' => 100,
+                'offset' => 0,
+                'time_range' => 'short_term'
+            ];
+
+            print_r($api->getMyTop('artists', $option));
+            
         } else {
             $options = [
                 'scope' => [
-                    'user-read-email',
+                    'user-top-read',
                 ],
             ];
 
