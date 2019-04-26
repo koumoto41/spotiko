@@ -38,19 +38,22 @@ class SpotifyApi {
         $this->set_session();
 
         $this->session->requestAccessToken($code);
-        $this->api->setAccessToken($this->session->getAccessToken());
+
+        $access_token = $this->session->getAccessToken();
+        $this->api->setAccessToken($access_token);
 
         # DBに登録する
+        echo $access_token;
 
 
         # 以下は削除すること
-        $option = [
-            'limit' => 100,
-            'offset' => 0,
-            'time_range' => 'short_term'
-        ];
-
-        print_r($this->api->getMyTop('artists', $option));
+//        $option = [
+//            'limit' => 100,
+//            'offset' => 0,
+//            'time_range' => 'short_term'
+//        ];
+//
+//        print_r($this->api->getMyTop('artists', $option));
 
     }
 
