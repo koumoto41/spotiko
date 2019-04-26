@@ -28,6 +28,8 @@ class TokenController extends Controller
 
         $user_id = 1;
 
+        // https://example.com/callback?error=access_denied&state=STATE
+
         if (isset($_GET['code'])) {
             # トークンを取得する
             $this->spotify_api_library->get_access_token($_GET['code'], $user_id);
