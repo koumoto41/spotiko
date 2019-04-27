@@ -16,3 +16,4 @@ Route::get('/', function () {
 });
 
 Route::get('/token', 'TokenController@get_token');
+Route::get('/set_artist', 'ArtistController@set_top_artist');
