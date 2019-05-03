@@ -60,7 +60,9 @@ class Top_Artist extends Model
     public function exist_target_date_data($target_date)
     {
         $data = DB::table($this->table)->where('target_date', $target_date)->first();
-        if ($data) return true;
+        if ($data) {
+            return true;
+        }
         return false;
     }
 
@@ -89,7 +91,8 @@ class Top_Artist extends Model
      * 該当の日付のデータを削除
      * @param $target_date
      */
-    public function delete_top_artist_by_target_date($target_date) {
+    public function delete_top_artist_by_target_date($target_date)
+    {
         DB::table($this->table)->where('target_date', $target_date)->delete();
     }
 

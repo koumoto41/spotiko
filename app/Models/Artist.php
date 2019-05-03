@@ -27,11 +27,14 @@ class Artist extends Model
      * @param $spotify_id
      * @return bool
      */
-    public function exist_artist($spotify_id) {
+    public function exist_artist($spotify_id)
+    {
 
         $data = DB::table($this->table)->where('spotify_id', $spotify_id)->first();
 
-        if ($data) return true;
+        if ($data) {
+            return true;
+        }
         return false;
     }
 
@@ -55,7 +58,8 @@ class Artist extends Model
      * @param $artist
      * @return array
      */
-    public function set_artist_array($artist) {
+    public function set_artist_array($artist)
+    {
 
         $artist_array = [];
 
@@ -79,7 +83,7 @@ class Artist extends Model
             foreach ($row->images as $image) {
                 # 画像の登録はこのタイプに限定
                 if ($image->height == '640' || $image->height == '320' || $image->height == '160') {
-                    $artist_array[$index]['artist']['img_'.$image->height] = $image->url;
+                    $artist_array[$index]['artist']['img_' . $image->height] = $image->url;
                 }
             }
 
@@ -96,7 +100,8 @@ class Artist extends Model
      * Artistがあれば更新、無ければ追加する
      * @param $artist_array
      */
-    public function insert_update_artist($artist_array) {
+    public function insert_update_artist($artist_array)
+    {
         # アーティスト情報を登録
         foreach ($artist_array as $key => $value) {
             if ($this->exist_artist($value['artist']['spotify_id'])) {
@@ -113,7 +118,8 @@ class Artist extends Model
      * Artist追加
      * @param $artist
      */
-    public function insert_artist($artist) {
+    public function insert_artist($artist)
+    {
         $artist_object = new Artist;
         $artist_object->fill($artist);
         $artist_object->save();
@@ -123,7 +129,8 @@ class Artist extends Model
      * Artist更新
      * @param $artist
      */
-    public function update_artist($artist) {
+    public function update_artist($artist)
+    {
         $artist_object = DB::table($this->table)->where('spotify_id', $artist['spotify_id']);
         $artist['updated_at'] = $this->now;
         $artist_object->update($artist);

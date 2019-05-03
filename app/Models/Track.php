@@ -20,7 +20,16 @@ class Track extends Model
     protected $spotify_api_library;
     protected $table = 'track';
     protected $guarded = ['id'];
-    protected $fillable = ['spotify_id', 'artist_id', 'album_id', 'name', 'url', 'popularity', 'track_number', 'preview_url'];
+    protected $fillable = [
+        'spotify_id',
+        'artist_id',
+        'album_id',
+        'name',
+        'url',
+        'popularity',
+        'track_number',
+        'preview_url'
+    ];
     public $timestamps = true;
     Private $now;
 
@@ -38,10 +47,17 @@ class Track extends Model
     public function exist_track($spotify_id)
     {
         $data = DB::table($this->table)->where('spotify_id', $spotify_id)->first();
-        if ($data) return true;
+        if ($data) {
+            return true;
+        }
         return false;
     }
 
+    /**
+     * Spotify IDからtrackを取得
+     * @param $spotify_id
+     * @return Model|\Illuminate\Database\Query\Builder|null|object
+     */
     public function get_track_by_spotify_id($spotify_id)
     {
         return DB::table($this->table)->where('spotify_id', $spotify_id)->first();

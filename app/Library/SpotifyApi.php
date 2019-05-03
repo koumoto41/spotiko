@@ -15,7 +15,8 @@ use App\Models\Token;
  * @property SpotifyWebAPI\Session $session
  * @property Token $token_model
  */
-class SpotifyApi {
+class SpotifyApi
+{
 
     private $session;
     private $api;
@@ -81,7 +82,8 @@ class SpotifyApi {
 
     }
 
-    public function is_refresh_token($exception, $user_id) {
+    public function is_refresh_token($exception, $user_id)
+    {
 
         $message = $exception->getMessage();
         $code = $exception->getCode();
@@ -101,7 +103,8 @@ class SpotifyApi {
      * @param $access_token
      * @param $refresh_token
      */
-    private function save_access_token($user_id, $access_token, $refresh_token) {
+    private function save_access_token($user_id, $access_token, $refresh_token)
+    {
         # DBに登録する
         if ($this->token_model->get_data_by_user_id($user_id)) {
             # データがあったらdelete
@@ -149,7 +152,7 @@ class SpotifyApi {
      * @param string $time_range Optional. Over what time frame the affinities are computed. Valid values: long_term (calculated from several years of data and including all new data as it becomes available), medium_term (approximately last 6 months), short_term (approximately last 4 weeks). Default: medium_term.
      * @return array|object
      */
-    public function get_my_top($user_id, $type, $limit=100, $offset=0, $time_range='short_term')
+    public function get_my_top($user_id, $type, $limit = 100, $offset = 0, $time_range = 'short_term')
     {
         $this->set_access_token($user_id);
 

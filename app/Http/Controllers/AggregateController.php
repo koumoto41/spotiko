@@ -43,13 +43,14 @@ class AggregateController extends Controller
     /**
      * TOP ARTISTの取得
      */
-    public function aggregate_artist() {
+    public function aggregate_artist()
+    {
 
         try {
-            $artist = $this->spotify_api_library->get_my_top(self::USER_ID, $type='artists');
+            $artist = $this->spotify_api_library->get_my_top(self::USER_ID, $type = 'artists');
         } catch (Exception $e) {
             # tokenリフレッシュ判定
-            if ($this->spotify_api_library->is_refresh_token($e,self::USER_ID)) {
+            if ($this->spotify_api_library->is_refresh_token($e, self::USER_ID)) {
                 $this->aggregate_artist();
                 return;
             }
@@ -80,13 +81,14 @@ class AggregateController extends Controller
     /**
      * TOP Trackの取得
      */
-    public function aggregate_track() {
+    public function aggregate_track()
+    {
 
         try {
-            $track = $this->spotify_api_library->get_my_top(self::USER_ID, $type='tracks');
+            $track = $this->spotify_api_library->get_my_top(self::USER_ID, $type = 'tracks');
         } catch (Exception $e) {
             # tokenリフレッシュ判定
-            if ($this->spotify_api_library->is_refresh_token($e,self::USER_ID)) {
+            if ($this->spotify_api_library->is_refresh_token($e, self::USER_ID)) {
                 $this->aggregate_track();
                 return;
             }
@@ -103,20 +105,6 @@ class AggregateController extends Controller
         # TOP rate登録
         $this->top_track_model->set_top_track($track_array);
 
-
         echo '集計が終了しました';
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

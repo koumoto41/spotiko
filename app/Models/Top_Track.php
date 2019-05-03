@@ -20,6 +20,10 @@ class Top_Track extends Model
         $this->now = date('Y-m-d H:i:s');
     }
 
+    /**
+     * Track Top Rateの登録
+     * @param $artist_array
+     */
     public function set_top_track($track_array)
     {
         # 初期化
@@ -36,7 +40,9 @@ class Top_Track extends Model
             # Track ID取得
             $track = $track_model->get_track_by_spotify_id($row['track']['spotify_id']);
 
-            if (!$track) continue;
+            if (!$track) {
+                continue;
+            }
 
             $track_id = $track->id;
             $popularity = $track->popularity;
@@ -44,7 +50,7 @@ class Top_Track extends Model
             $album_id = $row['track']['album_id'];
             $point = (int)self::RANKING_POINT - (int)$index;
 
-            $this->insert_top_artist($target_date, $artist_id, $album_id, $track_id, $popularity, $point);
+            $this->insert_top_track($target_date, $artist_id, $album_id, $track_id, $popularity, $point);
         }
     }
 
@@ -56,11 +62,22 @@ class Top_Track extends Model
     public function exist_target_date_data($target_date)
     {
         $data = DB::table($this->table)->where('target_date', $target_date)->first();
-        if ($data) return true;
+        if ($data) {
+            return true;
+        }
         return false;
     }
 
-    public function insert_top_artist($target_date, $artist_id, $album_id, $track_id, $popularity, $point)
+    /**
+     * Top Rateのデータを登録
+     * @param $target_date
+     * @param $artist_id
+     * @param $album_id
+     * @param $track_id
+     * @param $popularity
+     * @param $point
+     */
+    public function insert_top_track($target_date, $artist_id, $album_id, $track_id, $popularity, $point)
     {
         $upd_data = [
             'target_date' => $target_date,
@@ -80,7 +97,8 @@ class Top_Track extends Model
      * 該当の日付のデータを削除
      * @param $target_date
      */
-    public function delete_top_track_by_target_date($target_date) {
+    public function delete_top_track_by_target_date($target_date)
+    {
         DB::table($this->table)->where('target_date', $target_date)->delete();
     }
 
