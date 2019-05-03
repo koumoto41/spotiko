@@ -6,21 +6,25 @@ use Illuminate\Http\Request;
 use App\Library\SpotifyApi;
 use Exception;
 use App\Models\Artist;
+use App\Models\Track;
 use App\Models\Artist_Genre;
 use App\Models\Artist_Genre_Map;
 use App\Models\Top_Artist;
+use App\Models\Top_Track;
 
 /**
- * Class ArtistController
+ * Class AggregateController
  * @package App\Http\Controllers
  * @property Request $request
  * @property SpotifyApi $spotify_api_library
  * @property Artist $artist_model
+ * @property Track $track_model
  * @property Artist_Genre $artist_genre_model
  * @property Artist_Genre_Map $artist_genre_map_model
  * @property Top_Artist $top_artist_model
+ * @property Top_Track $top_track_model
  */
-class ArtistController extends Controller
+class AggregateController extends Controller
 {
     protected $spotify_api_library;
     const USER_ID = 1;
@@ -29,28 +33,26 @@ class ArtistController extends Controller
     {
         $this->spotify_api_library = $spotify_api_library;
         $this->artist_model = new Artist();
+        $this->track_model = new Track();
         $this->artist_genre_model = new Artist_Genre();
         $this->artist_genre_map_model = new Artist_Genre_Map();
         $this->top_artist_model = new Top_Artist();
+        $this->top_track_model = new Top_Track();
     }
 
-
-    public function set_top_artist() {
+    /**
+     * TOP ARTISTの取得
+     */
+    public function aggregate_artist() {
 
         try {
-            $artist = $this->spotify_api_library->get_top_artist(self::USER_ID);
+            $artist = $this->spotify_api_library->get_my_top(self::USER_ID, $type='artists');
         } catch (Exception $e) {
-            $message = $e->getMessage();
-            $code = $e->getCode();
-
-            # tokenの期限切れなのでリフレッシュする
-            if ($code == 401 && $message == 'The access token expired') {
-                $this->spotify_api_library->refresh_access_token(self::USER_ID);
-                $this->set_top_artist();
+            # tokenリフレッシュ判定
+            if ($this->spotify_api_library->is_refresh_token($e,self::USER_ID)) {
+                $this->aggregate_artist();
+                return;
             }
-
-            echo 'Message：'.$message.'<br>';
-            echo 'Code：'.$code;
             return;
         }
 
@@ -69,10 +71,52 @@ class ArtistController extends Controller
         # ジャンルマッピングする
         $this->artist_genre_map_model->set_artist_genre_map($artist_array);
 
-        # TOP rate登録
+        # TOP Rate登録
         $this->top_artist_model->set_top_artist($artist_array);
 
         echo '集計が終了しました';
     }
+
+    /**
+     * TOP Trackの取得
+     */
+    public function aggregate_track() {
+
+        try {
+            $track = $this->spotify_api_library->get_my_top(self::USER_ID, $type='tracks');
+        } catch (Exception $e) {
+            # tokenリフレッシュ判定
+            if ($this->spotify_api_library->is_refresh_token($e,self::USER_ID)) {
+                $this->aggregate_track();
+                return;
+            }
+            return;
+        }
+
+        # 必要なデータを配列に入れる
+        # アーティスト、アルバムの登録も行う
+        $track_array = $this->track_model->set_track_array($track, self::USER_ID);
+
+        # トラック登録更新
+        $this->track_model->insert_update_artist($track_array);
+
+        # TOP rate登録
+        $this->top_track_model->set_top_track($track_array);
+
+
+        echo '集計が終了しました';
+    }
+
+
+
+
+
+
+
+
+
+
+
+
 
 }

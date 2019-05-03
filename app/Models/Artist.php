@@ -51,44 +51,6 @@ class Artist extends Model
     }
 
     /**
-     * アーティストを登録
-     * @param $artist
-     */
-    public function insert_artist($artist) {
-        $artist_object = new Artist;
-
-        $artist_object->spotify_id = $artist['spotify_id'];
-        $artist_object->name = $artist['name'];
-        $artist_object->url = $artist['url'];
-        $artist_object->popularity = $artist['popularity'];
-        $artist_object->img_640 = $artist['img_640'];
-        $artist_object->img_320 = $artist['img_320'];
-        $artist_object->img_160 = $artist['img_160'];
-
-        $artist_object->save();
-    }
-
-    /**
-     * アーティストを更新
-     * @param $artist
-     */
-    public function update_artist($artist) {
-        $artist_object = DB::table($this->table)->where('spotify_id', $artist['spotify_id']);
-
-        $upd_array = [
-            'name' => $artist['name'],
-            'url' => $artist['url'],
-            'popularity' => $artist['popularity'],
-            'img_640' => $artist['img_640'],
-            'img_320' => $artist['img_320'],
-            'img_160' => $artist['img_160'],
-            'updated_at' => $this->now
-        ];
-
-        $artist_object->update($upd_array);
-    }
-
-    /**
      * API:getMyTopで取得したartist情報を配列に変換
      * @param $artist
      * @return array
@@ -97,27 +59,28 @@ class Artist extends Model
 
         $artist_array = [];
 
-        foreach ($artist->items as $index => $row) {
+        if (isset($artist->items)) {
+            $artist_items = $artist->items;
+        } else {
+            $artist_items[] = $artist;
+        }
+
+        foreach ($artist_items as $index => $row) {
             $artist_array[$index]['artist']['spotify_id'] = $row->id;
             $artist_array[$index]['artist']['name'] = $row->name;
             $artist_array[$index]['artist']['url'] = $row->external_urls->spotify;
             $artist_array[$index]['artist']['popularity'] = $row->popularity;
 
             # 画像
+            $artist_array[$index]['artist']['img_640'] = '';
+            $artist_array[$index]['artist']['img_320'] = '';
+            $artist_array[$index]['artist']['img_160'] = '';
+
             foreach ($row->images as $image) {
-                $artist_array[$index]['artist']['img_'.$image->height] = $image->url;
-            }
-
-            if (!isset($artist_array[$index]['artist']['img_640'])) {
-                $artist_array[$index]['artist']['img_640'] = '';
-            }
-
-            if (!isset($artist_array[$index]['artist']['img_320'])) {
-                $artist_array[$index]['artist']['img_320'] = '';
-            }
-
-            if (!isset($artist_array[$index]['artist']['img_160'])) {
-                $artist_array[$index]['artist']['img_160'] = '';
+                # 画像の登録はこのタイプに限定
+                if ($image->height == '640' || $image->height == '320' || $image->height == '160') {
+                    $artist_array[$index]['artist']['img_'.$image->height] = $image->url;
+                }
             }
 
             # ジャンル
@@ -128,6 +91,11 @@ class Artist extends Model
         return $artist_array;
     }
 
+
+    /**
+     * Artistがあれば更新、無ければ追加する
+     * @param $artist_array
+     */
     public function insert_update_artist($artist_array) {
         # アーティスト情報を登録
         foreach ($artist_array as $key => $value) {
@@ -140,4 +108,25 @@ class Artist extends Model
             }
         }
     }
+
+    /**
+     * Artist追加
+     * @param $artist
+     */
+    public function insert_artist($artist) {
+        $artist_object = new Artist;
+        $artist_object->fill($artist);
+        $artist_object->save();
+    }
+
+    /**
+     * Artist更新
+     * @param $artist
+     */
+    public function update_artist($artist) {
+        $artist_object = DB::table($this->table)->where('spotify_id', $artist['spotify_id']);
+        $artist['updated_at'] = $this->now;
+        $artist_object->update($artist);
+    }
+
 }

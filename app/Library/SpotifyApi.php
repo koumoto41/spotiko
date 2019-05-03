@@ -81,6 +81,20 @@ class SpotifyApi {
 
     }
 
+    public function is_refresh_token($exception, $user_id) {
+
+        $message = $exception->getMessage();
+        $code = $exception->getCode();
+
+        # tokenの期限切れなのでリフレッシュする
+        if ($code == 401 && $message == 'The access token expired') {
+            $this->refresh_access_token($user_id);
+            return true;
+        }
+
+        return false;
+    }
+
     /**
      * アクセスtokenを保存する。以前のは削除
      * @param $user_id
@@ -121,23 +135,47 @@ class SpotifyApi {
     }
 
     /**
-     * 自分のTOP Artistを取得
+     * 自分のTOPを取得
      * @param $user_id
      * @return array|object
      */
-    public function get_top_artist($user_id)
+
+    /**
+     * 自分のTOPを取得
+     * @param $user_id
+     * @param string $type The type of entity to return. Valid values: artists or tracks.
+     * @param int $limit
+     * @param int $offset
+     * @param string $time_range Optional. Over what time frame the affinities are computed. Valid values: long_term (calculated from several years of data and including all new data as it becomes available), medium_term (approximately last 6 months), short_term (approximately last 4 weeks). Default: medium_term.
+     * @return array|object
+     */
+    public function get_my_top($user_id, $type, $limit=100, $offset=0, $time_range='short_term')
     {
         $this->set_access_token($user_id);
 
         $option = [
-            'limit' => 100,
-            'offset' => 0,
-            'time_range' => 'short_term'
+            'limit' => $limit,
+            'offset' => $offset,
+            'time_range' => $time_range
         ];
 
-        return $this->api->getMyTop('artists', $option);
+        return $this->api->getMyTop($type, $option);
 
     }
+
+    public function get_artist_by_id($user_id, $artist_id)
+    {
+        $this->set_access_token($user_id);
+        return $this->api->getArtist($artist_id);
+
+    }
+
+    public function get_album_by_id($user_id, $album_id)
+    {
+        $this->set_access_token($user_id);
+        return $this->api->getAlbum($album_id);
+    }
+
 }
 
 
