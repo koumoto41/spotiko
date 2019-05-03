@@ -16,4 +16,5 @@ Route::get('/', function () {
 });
 
 Route::get('/token', 'TokenController@get_token');
-Route::get('/set_artist', 'ArtistController@set_top_artist');
+Route::get('/aggregate/artist', 'AggregateController@aggregate_artist');
+Route::get('/aggregate/track', 'AggregateController@aggregate_track');
