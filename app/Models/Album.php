@@ -26,7 +26,9 @@ class Album extends Model
     public function exist_album($spotify_id)
     {
         $data = DB::table($this->table)->where('spotify_id', $spotify_id)->first();
-        if ($data) return true;
+        if ($data) {
+            return true;
+        }
         return false;
     }
 
@@ -38,7 +40,9 @@ class Album extends Model
     public function get_album_id_by_spotify_id($spotify_id)
     {
         $data = DB::table($this->table)->where('spotify_id', $spotify_id)->first();
-        if ($data) return $data->id;
+        if ($data) {
+            return $data->id;
+        }
         return '';
     }
 

@@ -11,7 +11,6 @@ use Exception;
  * @package App\Http\Controllers
  * @property SpotifyApi $spotify_api_library
  */
-
 class TokenController extends Controller
 {
 
@@ -26,7 +25,8 @@ class TokenController extends Controller
     /**
      *
      */
-    public function get_token() {
+    public function get_token()
+    {
         if (isset($_GET['code'])) {
             # トークンを取得する
             try {
