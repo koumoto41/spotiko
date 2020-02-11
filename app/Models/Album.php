@@ -66,20 +66,15 @@ class Album extends Model
         $album_array['type'] = $album->album_type;
 
         # 画像
+        $album_array['img_640'] = '';
+        $album_array['img_300'] = '';
+        $album_array['img_64'] = '';
+
         foreach ($album->images as $image) {
-            $album_array['img_' . $image->height] = $image->url;
-        }
-
-        if (!isset($album_array['img_640'])) {
-            $album_array['img_640'] = '';
-        }
-
-        if (!isset($album_array['img_300'])) {
-            $album_array['img_300'] = '';
-        }
-
-        if (!isset($album_array['img_64'])) {
-            $album_array['img_160'] = '';
+            # 画像の登録はこのタイプに限定
+            if ($image->height == '640' || $image->height == '300' || $image->height == '64') {
+                $album_array['img_' . $image->height] = $image->url;
+            }
         }
 
         return $album_array;
