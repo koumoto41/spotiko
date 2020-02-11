@@ -48,29 +48,20 @@ class AggregateTrack extends Command
      */
     public function handle()
     {
-        $artist = $this->get_my_artist();
-        if (!$artist) {
-            echo '【曲目集計】アーティストの集計に失敗しました';
+        $tracks = $this->get_my_tracks();
+        if (!$tracks) {
+            echo '【曲目集計】集計に失敗しました';
             return false;
         }
 
-        # 必要なデータを配列に入れる
-        $artist_array = $this->artist_model->set_artist_array($artist);
+        # アーティスト、アルバムの登録も行う
+        $track_array = $this->track_model->set_track_array($tracks, self::USER_ID);
 
-        # ジャンル情報をまとめる
-        $genre_array = $this->artist_genre_model->put_artist_genre_array($artist_array);
+        # トラック登録更新
+        $this->track_model->insert_update_artist($track_array);
 
-        # アーティスト登録更新
-        $this->artist_model->insert_update_artist($artist_array);
-
-        # ジャンル登録
-        $this->artist_genre_model->insert_update_genre($genre_array);
-
-        # ジャンルマッピングする
-        $this->artist_genre_map_model->set_artist_genre_map($artist_array);
-
-        # TOP Rate登録
-        $this->top_artist_model->set_top_artist($artist_array);
+        # TOP rate登録
+        $this->top_track_model->set_top_track($track_array);
 
         echo '【曲目集計】集計が終了しました。';
     }
@@ -78,14 +69,14 @@ class AggregateTrack extends Command
     /**
      * @return array|bool|object
      */
-    public function get_my_artist()
+    public function get_my_tracks()
     {
         try {
-            return $this->spotify_api_library->get_my_top(self::USER_ID, $type = 'artists');
+            return $this->spotify_api_library->get_my_top(self::USER_ID, $type = 'tracks');
         } catch (Exception $e) {
             # tokenリフレッシュ判定
             if ($this->spotify_api_library->is_refresh_token($e, self::USER_ID)) {
-                $this->get_my_artist();
+                $this->get_my_tracks();
                 return false;
             }
             return false;
