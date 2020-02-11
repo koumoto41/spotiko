@@ -6,24 +6,19 @@ use Illuminate\Console\Command;
 use Illuminate\Http\Request;
 use App\Library\SpotifyApi;
 use Exception;
-use App\Models\Artist;
-use App\Models\Track;
-use App\Models\Artist_Genre;
-use App\Models\Artist_Genre_Map;
-use App\Models\Top_Artist;
-use App\Models\Top_Track;
+use App\Models;
 
 /**
  * Class AggregateTrack
  * @package App\Http\Controllers
  * @property Request $request
  * @property SpotifyApi $spotify_api_library
- * @property Artist $artist_model
- * @property Track $track_model
- * @property Artist_Genre $artist_genre_model
- * @property Artist_Genre_Map $artist_genre_map_model
- * @property Top_Artist $top_artist_model
- * @property Top_Track $top_track_model
+ * @property Models\Artist $artist_model
+ * @property Models\Track $track_model
+ * @property Models\Artist_Genre $artist_genre_model
+ * @property Models\Artist_Genre_Map $artist_genre_map_model
+ * @property Models\Top_Artist $top_artist_model
+ * @property Models\Top_Track $top_track_model
  */
 class AggregateTrack extends Command
 {
@@ -38,12 +33,12 @@ class AggregateTrack extends Command
         parent::__construct();
 
         $this->spotify_api_library = $spotify_api_library;
-        $this->artist_model = new Artist();
-        $this->track_model = new Track();
-        $this->artist_genre_model = new Artist_Genre();
-        $this->artist_genre_map_model = new Artist_Genre_Map();
-        $this->top_artist_model = new Top_Artist();
-        $this->top_track_model = new Top_Track();
+        $this->artist_model = new Models\Artist();
+        $this->track_model = new Models\Track();
+        $this->artist_genre_model = new Models\Artist_Genre();
+        $this->artist_genre_map_model = new Models\Artist_Genre_Map();
+        $this->top_artist_model = new Models\Top_Artist();
+        $this->top_track_model = new Models\Top_Track();
     }
 
     /**
