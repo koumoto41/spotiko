@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Library\SpotifyApi;
 use Exception;
 use App\Models;
+use Illuminate\Support\Facades\Artisan;
 
 /**
  * Class AggregateArtist
@@ -84,11 +85,9 @@ class AggregateArtist extends Command
             return $this->spotify_api_library->get_my_top(self::USER_ID, $type = 'artists');
         } catch (Exception $e) {
             # tokenリフレッシュ判定
-            if ($this->spotify_api_library->is_refresh_token($e, self::USER_ID)) {
-                $this->get_my_artists();
-                return false;
-            }
-            return false;
+            $this->spotify_api_library->is_refresh_token($e, self::USER_ID);
+            Artisan::call('command:AggregateArtist');
+            exit;
         }
     }
 }
