@@ -139,19 +139,13 @@ class SpotifyApi
     }
 
     /**
-     * 自分のTOPを取得
+     * 自分のTOPチャートを取得
      * @param $user_id
-     * @return array|object
-     */
-
-    /**
-     * 自分のTOPを取得
-     * @param $user_id
-     * @param string $type The type of entity to return. Valid values: artists or tracks.
+     * @param $type
      * @param int $limit
      * @param int $offset
-     * @param string $time_range Optional. Over what time frame the affinities are computed. Valid values: long_term (calculated from several years of data and including all new data as it becomes available), medium_term (approximately last 6 months), short_term (approximately last 4 weeks). Default: medium_term.
-     * @return array|object
+     * @param string $time_range
+     * @return mixed
      */
     public function get_my_top($user_id, $type, $limit = 100, $offset = 0, $time_range = 'short_term')
     {
@@ -178,6 +172,12 @@ class SpotifyApi
     {
         $this->set_access_token($user_id);
         return $this->api->getAlbum($album_id);
+    }
+
+    public function get_audio_features_by_id($user_id, $track_id)
+    {
+        $this->set_access_token($user_id);
+        return $this->api->getAudioFeatures($track_id);
     }
 
 }
