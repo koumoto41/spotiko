@@ -9,6 +9,7 @@ use App\Library\SpotifyApi;
 /**
  * Class Feature_Track
  * @package App\Models
+ * @property Track $track_model;
  * @property SpotifyApi $spotify_api_library
  */
 class Feature_Track extends Model
@@ -39,7 +40,54 @@ class Feature_Track extends Model
         $this->now = date('Y-m-d H:i:s');
     }
 
-    public function exist_feature_track($track_id)
+    /**
+     * trackからfeature_trackを取得して登録する
+     * @param $track_array
+     * @param $user_id
+     */
+    public function set_feature_track($track_array, $user_id)
+    {
+        $track_model = new Track();
+
+        foreach ($track_array as $row) {
+
+            $track_detail = $track_model->get_track_by_spotify_id($row['track']['spotify_id']);
+
+            if (!$track_detail) {
+                continue;
+            }
+
+            $feature_track_array = [];
+            $track_id = $track_detail->id;
+            $track_spotify_id = $row['track']['spotify_id'];
+
+            if ($this->exist_feature_track($track_id)) {
+                continue;
+            }
+
+            $feature_track_detail = $this->spotify_api_library->get_audio_features_by_id($user_id, $track_spotify_id);
+
+            $item = $feature_track_detail->audio_features[0];
+
+            $feature_track_array['track_id'] = $track_id;
+            $feature_track_array['danceability'] = $item->danceability;
+            $feature_track_array['energy'] = $item->energy;
+            $feature_track_array['loudness'] = $item->loudness;
+            $feature_track_array['energy'] = $item->energy;
+            $feature_track_array['mode'] = $item->mode;
+            $feature_track_array['speechiness'] = $item->speechiness;
+            $feature_track_array['acousticness'] = $item->acousticness;
+            $feature_track_array['instrumentalness'] = $item->instrumentalness;
+            $feature_track_array['liveness'] = $item->liveness;
+            $feature_track_array['valence'] = $item->valence;
+            $feature_track_array['tempo'] = $item->tempo;
+            $feature_track_array['time_signature'] = $item->time_signature;
+
+            $this->insert_feature_track($feature_track_array);
+        }
+    }
+
+    private function exist_feature_track($track_id)
     {
         $data = DB::table($this->table)->where('track_id', $track_id)->first();
         if ($data) {
