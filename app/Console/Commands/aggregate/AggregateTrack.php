@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Artisan;
  * @property SpotifyApi $spotify_api_library
  * @property Models\Artist $artist_model
  * @property Models\Track $track_model
+ * @property Models\Feature_Track $feature_track_model
  * @property Models\Artist_Genre $artist_genre_model
  * @property Models\Artist_Genre_Map $artist_genre_map_model
  * @property Models\Top_Artist $top_artist_model
@@ -36,6 +37,7 @@ class AggregateTrack extends Command
         $this->spotify_api_library = $spotify_api_library;
         $this->artist_model = new Models\Artist();
         $this->track_model = new Models\Track();
+        $this->feature_track_model = new Models\Feature_Track();
         $this->artist_genre_model = new Models\Artist_Genre();
         $this->artist_genre_map_model = new Models\Artist_Genre_Map();
         $this->top_artist_model = new Models\Top_Artist();
@@ -63,6 +65,9 @@ class AggregateTrack extends Command
 
         # TOP rate登録
         $this->top_track_model->set_top_track($track_array);
+
+        # 特徴登録
+        $this->feature_track_model->set_feature_track($track_array, self::USER_ID);
 
         echo '【曲目集計】集計が終了しました。';
     }
