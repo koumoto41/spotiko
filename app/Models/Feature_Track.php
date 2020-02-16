@@ -37,15 +37,16 @@ class Feature_Track extends Model
     public function __construct()
     {
         $this->spotify_api_library = new SpotifyApi;
-        $this->track_model = new Feature_Track();
         $this->now = date('Y-m-d H:i:s');
     }
 
     public function set_feature_track($track_array, $user_id)
     {
+        $track_model = new Track();
+
         foreach ($track_array as $row) {
 
-            $track_detail = $this->track_model->get_track_by_spotify_id($row['track']['spotify_id']);
+            $track_detail = $track_model->get_track_by_spotify_id($row['track']['spotify_id']);
 
             if (!$track_detail) {
                 continue;
@@ -77,29 +78,11 @@ class Feature_Track extends Model
             $feature_track_array['tempo'] = $item->tempo;
             $feature_track_array['time_signature'] = $item->time_signature;
 
-            $this->feature_track_model->insert_feature_track($feature_track_array);
+            $this->insert_feature_track($feature_track_array);
         }
 
         echo '終了';
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     private function exist_feature_track($track_id)
     {
