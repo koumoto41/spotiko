@@ -176,4 +176,9 @@ class Track extends Model
         $track_object->update($track);
     }
 
+    public function get_track_all()
+    {
+        return DB::table($this->table)->get();
+    }
+
 }
