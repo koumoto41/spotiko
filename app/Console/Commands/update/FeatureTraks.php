@@ -5,6 +5,8 @@ namespace App\Console\Commands\update;
 use Illuminate\Console\Command;
 use App\Library\SpotifyApi;
 use App\Models;
+use Illuminate\Support\Facades\Artisan;
+use Exception;
 
 /**
  * Class FeatureTraks
@@ -49,7 +51,14 @@ class FeatureTraks extends Command
                 continue;
             }
 
-            $data = $this->spotify_api_library->get_audio_features_by_id(self::USER_ID, $track_spotify_id);
+            try {
+                $data = $this->spotify_api_library->get_audio_features_by_id(self::USER_ID, $track_spotify_id);
+            } catch (Exception $e) {
+                # tokenリフレッシュ判定
+                $this->spotify_api_library->is_refresh_token($e, self::USER_ID);
+                Artisan::call('command:FeatureTracks');
+                exit;
+            }
 
             $item = $data->audio_features[0];
 
@@ -69,5 +78,7 @@ class FeatureTraks extends Command
 
             $this->feature_track_model->insert_feature_track($feature_track_array);
         }
+
+        echo '終了';
     }
 }
