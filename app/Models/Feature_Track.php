@@ -40,6 +40,11 @@ class Feature_Track extends Model
         $this->now = date('Y-m-d H:i:s');
     }
 
+    /**
+     * trackからfeature_trackを取得して登録する
+     * @param $track_array
+     * @param $user_id
+     */
     public function set_feature_track($track_array, $user_id)
     {
         $track_model = new Track();
@@ -80,8 +85,6 @@ class Feature_Track extends Model
 
             $this->insert_feature_track($feature_track_array);
         }
-
-        echo '終了';
     }
 
     private function exist_feature_track($track_id)
