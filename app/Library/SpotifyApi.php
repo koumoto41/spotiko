@@ -2,8 +2,7 @@
 
 namespace App\Library;
 
-// require_once '../vendor/autoload.php';
-require_once 'vendor/autoload.php';
+require_once env('ROOT_PATH') . '/vendor/autoload.php';
 
 use Illuminate\Http\Request;
 use SpotifyWebAPI;
