@@ -34,4 +34,11 @@
       0 => 'NunoMaduro\\Collision\\Adapters\\Laravel\\CollisionServiceProvider',
     ),
   ),
+  'olssonm/l5-very-basic-auth' => 
+  array (
+    'providers' => 
+    array (
+      0 => 'Olssonm\\VeryBasicAuth\\VeryBasicAuthServiceProvider',
+    ),
+  ),
 );

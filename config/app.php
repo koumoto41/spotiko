@@ -175,6 +175,9 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+        // l5-very-basic-auth
+        Olssonm\VeryBasicAuth\VeryBasicAuthServiceProvider::class,
+
     ],
 
     /*
