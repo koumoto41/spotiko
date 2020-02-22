@@ -6,6 +6,11 @@ use Illuminate\Http\Request;
 
 class LineController extends Controller
 {
+    public function callback1()
+    {
+
+    }
+
     public function callback()
     {
         $accessToken = 'Xzut+uK0Y/jLiKzcH4JXxX8wFqeq2klu+hZK2ZGkakOW2CrIz8jvdHrsXh8nYRHyGt/5amcCmlFGOZpGpdng3cx3EnH+w3uutFpXLOYvCd6TQeG1o8A5AN5uDAM1xhT7JCfJZKNV2VsKPjU0y3fpeAdB04t89/1O/w1cDnyilFU=';
