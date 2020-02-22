@@ -12,12 +12,11 @@
 */
 
 Route::group(['middleware' => 'auth.very_basic'], function() {
-
     Route::get('/token', 'TokenController@get_token');
     Route::get('/aggregate/artist', 'AggregateController@aggregate_artist');
     Route::get('/aggregate/track', 'AggregateController@aggregate_track');
-
     Route::get('/', 'DisplayController@page_top');
-
 });
+
+Route::get('/line_callback', 'LineController@callback');
 
