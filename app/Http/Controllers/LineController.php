@@ -13,7 +13,7 @@ class LineController extends Controller
         // ユーザーからのメッセージ取得
         $json_string = file_get_contents('php://input');
 
-        if ($json_string) {
+        if (!$json_string) {
             return;
         }
 
