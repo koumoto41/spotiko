@@ -102,4 +102,38 @@ class Top_Track extends Model
         DB::table($this->table)->where('target_date', $target_date)->delete();
     }
 
+    /**
+     * 集計を取ってる日付を表示
+     * @param bool $first
+     * @return \Illuminate\Support\Collection|mixed
+     */
+    public function get_aggregate_date($first = false)
+    {
+        $aggregate_date = DB::table($this->table)
+            ->groupBy('target_date')
+            ->latest('target_date')
+            ->pluck('target_date');
+
+        if ($first) {
+            return $aggregate_date->first();
+        }
+        return $aggregate_date;
+    }
+
+    /**
+     * @param $aggregate_date
+     * @return \Illuminate\Support\Collection
+     */
+    public function get_top_track_by_aggregate_date($aggregate_date)
+    {
+        return DB::table($this->table)
+            ->join('track', 'top_track.track_id', '=', 'track.id')
+            ->join('artist', 'top_track.artist_id', '=', 'artist.id')
+            ->join('album', 'top_track.album_id', '=', 'album.id')
+            ->where('target_date', $aggregate_date)
+            ->latest('target_date')
+            ->select('album.name AS album_name', 'track.name AS track_name',  'artist.name AS artist_name')
+            ->get();
+    }
+
 }
