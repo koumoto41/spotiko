@@ -6,9 +6,14 @@ use Illuminate\Http\Request;
 
 class LineController extends Controller
 {
+    public function callback_test()
+    {
+        http_response_code(200);
+    }
+
     public function callback()
     {
-        http_response_code(200) ;
+        http_response_code(200);
 
         $accessToken = 'Xzut+uK0Y/jLiKzcH4JXxX8wFqeq2klu+hZK2ZGkakOW2CrIz8jvdHrsXh8nYRHyGt/5amcCmlFGOZpGpdng3cx3EnH+w3uutFpXLOYvCd6TQeG1o8A5AN5uDAM1xhT7JCfJZKNV2VsKPjU0y3fpeAdB04t89/1O/w1cDnyilFU=';
         $jsonString = file_get_contents('php://input');

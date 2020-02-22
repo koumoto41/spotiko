@@ -18,5 +18,5 @@ Route::group(['middleware' => 'auth.very_basic'], function() {
     Route::get('/', 'DisplayController@page_top');
 });
 
-Route::get('/bot_callback', 'LineController@callback');
+Route::get('/bot_callback', 'LineController@callback_test');
 
