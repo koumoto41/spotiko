@@ -8,7 +8,7 @@ class LineController extends Controller
 {
     public function callback()
     {
-        $accessToken = 'Line Developersで発行したアクセストークン';
+        $accessToken = config('line.LINE_ACCESS_TOKEN');
         $jsonString = file_get_contents('php://input'); error_log($jsonString);
         $jsonObj = json_decode($jsonString); $message = $jsonObj->{"events"}[0]->{"message"};
         $replyToken = $jsonObj->{"events"}[0]->{"replyToken"};
