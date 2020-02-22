@@ -12,7 +12,8 @@
         "fideloper/proxy": "^4.0",
         "jwilsson/spotify-web-api-php": "^3.0",
         "laravel/framework": "5.8.*",
-        "laravel/tinker": "^1.0"
+        "laravel/tinker": "^1.0",
+        "olssonm/l5-very-basic-auth": "5.*"
     },
     "require-dev": {
         "beyondcode/laravel-dump-server": "^1.0",
