@@ -6,13 +6,10 @@ use Illuminate\Http\Request;
 
 class LineController extends Controller
 {
-    public function callback1()
-    {
-
-    }
-
     public function callback()
     {
+        http_response_code(200) ;
+
         $accessToken = 'Xzut+uK0Y/jLiKzcH4JXxX8wFqeq2klu+hZK2ZGkakOW2CrIz8jvdHrsXh8nYRHyGt/5amcCmlFGOZpGpdng3cx3EnH+w3uutFpXLOYvCd6TQeG1o8A5AN5uDAM1xhT7JCfJZKNV2VsKPjU0y3fpeAdB04t89/1O/w1cDnyilFU=';
         $jsonString = file_get_contents('php://input');
         error_log($jsonString);
@@ -117,7 +114,8 @@ class LineController extends Controller
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
         curl_setopt($ch, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json; charser=UTF-8', 'Authorization: Bearer ' . $accessToken ));
-        $result = curl_exec($ch); error_log($result);
+        $result = curl_exec($ch);
+        error_log($result);
         curl_close($ch);
     }
 }
