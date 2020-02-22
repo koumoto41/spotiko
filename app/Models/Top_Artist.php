@@ -11,7 +11,7 @@ class Top_Artist extends Model
     protected $guarded = ['id'];
     protected $fillable = ['artist_id', 'target_date', 'point', 'popularity'];
     public $timestamps = true;
-    Private $now;
+    private $now;
 
     const RANKING_POINT = 50;
 
@@ -93,7 +93,32 @@ class Top_Artist extends Model
      */
     public function delete_top_artist_by_target_date($target_date)
     {
-        DB::table($this->table)->where('target_date', $target_date)->delete();
+        DB::table('top_artist')->where('target_date', $target_date)->delete();
     }
 
+    /**
+     * 集計を取ってる日付を表示
+     * @return mixed
+     */
+    public function get_aggregate_date($first = false)
+    {
+        $aggregate_date = DB::table($this->table)
+            ->groupBy('target_date')
+            ->latest('target_date')
+            ->pluck('target_date');
+
+        if ($first) {
+            return $aggregate_date->first();
+        }
+        return $aggregate_date;
+    }
+
+    public function get_top_artist_by_aggregate_date($aggregate_date)
+    {
+        return DB::table($this->table)
+            ->join('artist', 'top_artist.artist_id', '=', 'artist.id')
+            ->where('target_date', $aggregate_date)
+            ->latest('target_date')
+            ->get();
+    }
 }
