@@ -11,7 +11,13 @@ class LineController extends Controller
         $accessToken = 'Xzut+uK0Y/jLiKzcH4JXxX8wFqeq2klu+hZK2ZGkakOW2CrIz8jvdHrsXh8nYRHyGt/5amcCmlFGOZpGpdng3cx3EnH+w3uutFpXLOYvCd6TQeG1o8A5AN5uDAM1xhT7JCfJZKNV2VsKPjU0y3fpeAdB04t89/1O/w1cDnyilFU=';
         $jsonString = file_get_contents('php://input');
         error_log($jsonString);
-        $jsonObj = json_decode($jsonString); $message = $jsonObj->{"events"}[0]->{"message"};
+
+        if (!$jsonString) {
+            return;
+        }
+
+        $jsonObj = json_decode($jsonString);
+        $message = $jsonObj->{"events"}[0]->{"message"};
         $replyToken = $jsonObj->{"events"}[0]->{"replyToken"};
 
 
