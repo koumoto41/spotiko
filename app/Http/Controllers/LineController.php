@@ -13,114 +13,54 @@ class LineController extends Controller
 
     public function callback()
     {
-        http_response_code(200);
+        // HTTPヘッダを設定
+        $channelToken = 'Xzut+uK0Y/jLiKzcH4JXxX8wFqeq2klu+hZK2ZGkakOW2CrIz8jvdHrsXh8nYRHyGt/5amcCmlFGOZpGpdng3cx3EnH+w3uutFpXLOYvCd6TQeG1o8A5AN5uDAM1xhT7JCfJZKNV2VsKPjU0y3fpeAdB04t89/1O/w1cDnyilFU=';
+        $headers = [
+            'Authorization: Bearer ' . $channelToken,
+            'Content-Type: application/json; charset=utf-8',
+        ];
 
-        $accessToken = 'Xzut+uK0Y/jLiKzcH4JXxX8wFqeq2klu+hZK2ZGkakOW2CrIz8jvdHrsXh8nYRHyGt/5amcCmlFGOZpGpdng3cx3EnH+w3uutFpXLOYvCd6TQeG1o8A5AN5uDAM1xhT7JCfJZKNV2VsKPjU0y3fpeAdB04t89/1O/w1cDnyilFU=';
-        $jsonString = file_get_contents('php://input');
-        error_log($jsonString);
+// POSTデータを設定してJSONにエンコード
+        $post = [
+            'to' => 'Ub5e074ef63b4349a01b3a29c817f4025',
+            'messages' => [
+                [
+                    'type' => 'text',
+                    'text' => 'hello world',
+                ],
+            ],
+        ];
+        $post = json_encode($post);
 
-        if (!$jsonString) {
+// HTTPリクエストを設定
+        $ch = curl_init('https://api.line.me/v2/bot/message/push');
+        $options = [
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_HTTPHEADER => $headers,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_BINARYTRANSFER => true,
+            CURLOPT_HEADER => true,
+            CURLOPT_POSTFIELDS => $post,
+        ];
+        curl_setopt_array($ch, $options);
+
+// 実行
+        $result = curl_exec($ch);
+
+// エラーチェック
+        $errno = curl_errno($ch);
+        if ($errno) {
             return;
         }
 
-        $jsonObj = json_decode($jsonString);
-        $message = $jsonObj->{"events"}[0]->{"message"};
-        $replyToken = $jsonObj->{"events"}[0]->{"replyToken"};
+// HTTPステータスを取得
+        $info = curl_getinfo($ch);
+        $httpStatus = $info['http_code'];
 
+        $responseHeaderSize = $info['header_size'];
+        $body = substr($result, $responseHeaderSize);
 
-        // 送られてきたメッセージの中身からレスポンスのタイプを選択
-        if ($message->{"text"} == '確認') {
-            // 確認ダイアログタイプ
-            $messageData = [
-                'type' => 'template',
-                'altText' => '確認ダイアログ',
-                'template' => [ 'type' => 'confirm', 'text' => '元気ですかー？',
-                    'actions' => [
-                        [ 'type' => 'message', 'label' => '元気です', 'text' => '元気です' ],
-                        [ 'type' => 'message', 'label' => 'まあまあです', 'text' => 'まあまあです' ],
-                    ]
-                ]
-            ];
-        } elseif ($message->{"text"} == 'ボタン') {
-            // ボタンタイプ
-            $messageData = [
-                'type' => 'template',
-                'altText' => 'ボタン',
-                'template' => [
-                    'type' => 'buttons',
-                    'title' => 'タイトルです',
-                    'text' => '選択してね',
-                    'actions' => [
-                        [
-                            'type' => 'postback',
-                            'label' => 'webhookにpost送信',
-                            'data' => 'value'
-                        ],
-                        [
-                            'type' => 'uri',
-                            'label' => 'googleへ移動',
-                            'uri' => 'https://google.com'
-                        ]
-                    ]
-                ]
-            ];
-        } elseif ($message->{"text"} == 'カルーセル') {
-            // カルーセルタイプ
-            $messageData = [
-                'type' => 'template',
-                'altText' => 'カルーセル',
-                'template' => [
-                    'type' => 'carousel',
-                    'columns' => [
-                        [
-                            'title' => 'カルーセル1',
-                            'text' => 'カルーセル1です',
-                            'actions' => [
-                                [
-                                    'type' => 'postback',
-                                    'label' => 'webhookにpost送信',
-                                    'data' => 'value'
-                                ],
-                                [
-                                    'type' => 'uri',
-                                    'label' => '美容の口コミ広場を見る',
-                                    'uri' => 'http://clinic.e-kuchikomi.info/'
-                                ]
-                            ]
-                        ],
-                        [
-                            'title' => 'カルーセル2',
-                            'text' => 'カルーセル2です',
-                            'actions' => [
-                                [
-                                    'type' => 'postback',
-                                    'label' => 'webhookにpost送信',
-                                    'data' => 'value'
-                                ],
-                                [
-                                    'type' => 'uri',
-                                    'label' => '女美会を見る',
-                                    'uri' => 'https://jobikai.com/'
-                                ]
-                            ]
-                        ],
-                    ]
-                ]
-            ];
-        } else {
-            // それ以外は送られてきたテキストをオウム返し
-            $messageData = [ 'type' => 'text', 'text' => $message->{"text"} ];
-        }
-        $response = [ 'replyToken' => $replyToken, 'messages' => [$messageData] ];
-        error_log(json_encode($response));
-        $ch = curl_init('https://api.line.me/v2/bot/message/reply');
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($response));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json; charser=UTF-8', 'Authorization: Bearer ' . $accessToken ));
-        $result = curl_exec($ch);
-        error_log($result);
-        curl_close($ch);
+// 200 だったら OK
+        echo $httpStatus . ' ' . $body;
     }
 }
