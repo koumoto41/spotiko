@@ -32,10 +32,16 @@ class DisplayController extends Controller
     {
         // アーティスト集計関係のデータを取得
         $aggregate_artist_date_list = $this->top_artist_model->get_aggregate_date();
-        $aggregate_artist_date_first = $this->top_artist_model->get_aggregate_date(true);
+        $data['display_artist_date'] = $this->top_artist_model->get_aggregate_date(true);
 
         // アーティストデータ取得
-        $top_artist_list = $this->top_artist_model->get_top_artist_by_aggregate_date($aggregate_artist_date_first);
+        $data['artist'] = $this->top_artist_model->get_top_artist_by_aggregate_date($data['display_artist_date']);
+
+        // トラック集計関係のデータを取得
+        $aggregate_track_date_list = $this->top_track_model->get_aggregate_date();
+        $data['display_track_date'] = $this->top_track_model->get_aggregate_date(true);
+
+        $data['track'] = $this->top_track_model->get_top_track_by_aggregate_date($data['display_track_date']);
 
 
 
@@ -43,7 +49,9 @@ class DisplayController extends Controller
 
 
 
-        return view('top', ['artist' => $top_artist_list]);
+
+
+        return view('top', $data);
 
     }
 

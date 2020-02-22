@@ -113,6 +113,10 @@ class Top_Artist extends Model
         return $aggregate_date;
     }
 
+    /**
+     * @param $aggregate_date
+     * @return \Illuminate\Support\Collection
+     */
     public function get_top_artist_by_aggregate_date($aggregate_date)
     {
         return DB::table($this->table)
