@@ -13,8 +13,20 @@ class LineController extends Controller
 
     public function callback()
     {
-        // HTTPヘッダを設定
-        $channelToken = 'Xzut+uK0Y/jLiKzcH4JXxX8wFqeq2klu+hZK2ZGkakOW2CrIz8jvdHrsXh8nYRHyGt/5amcCmlFGOZpGpdng3cx3EnH+w3uutFpXLOYvCd6TQeG1o8A5AN5uDAM1xhT7JCfJZKNV2VsKPjU0y3fpeAdB04t89/1O/w1cDnyilFU=';
+        // まずは HTTPステータス 200 を返す
+        http_response_code(200) ;
+        echo '200 {}';
+
+// 送られて来たJSONデータを取得
+        $json_string = file_get_contents('php://input');
+        $json = json_decode($json_string);
+// JSONデータから返信先を取得
+        $replyToken = $json->events[0]->replyToken;
+// JSONデータから送られてきたメッセージを取得
+        $message = $json->events[0]->message->text;
+
+// HTTPヘッダを設定
+        $channelToken = 'Gh/zQUgVN4fO29J4LwXAxiE733+YMRGB/2CGptm57o+jjgevGFHqM8jOuTNireSZGt/5amcCmlFGOZpGpdng3cx3EnH+w3uutFpXLOYvCd5dbasNuEtwpxjl7x6Pk/k4xhy226bfRuYZsbxvtA41BgdB04t89/1O/w1cDnyilFU=';
         $headers = [
             'Authorization: Bearer ' . $channelToken,
             'Content-Type: application/json; charset=utf-8',
@@ -22,18 +34,18 @@ class LineController extends Controller
 
 // POSTデータを設定してJSONにエンコード
         $post = [
-            'to' => 'Ub5e074ef63b4349a01b3a29c817f4025',
+            'replyToken' => $replyToken,
             'messages' => [
                 [
                     'type' => 'text',
-                    'text' => 'hello world',
+                    'text' => '「' . $message . '」',
                 ],
             ],
         ];
         $post = json_encode($post);
 
 // HTTPリクエストを設定
-        $ch = curl_init('https://api.line.me/v2/bot/message/push');
+        $ch = curl_init('https://api.line.me/v2/bot/message/reply');
         $options = [
             CURLOPT_CUSTOMREQUEST => 'POST',
             CURLOPT_HTTPHEADER => $headers,
@@ -42,12 +54,12 @@ class LineController extends Controller
             CURLOPT_HEADER => true,
             CURLOPT_POSTFIELDS => $post,
         ];
-        curl_setopt_array($ch, $options);
 
 // 実行
-        $result = curl_exec($ch);
+        curl_setopt_array($ch, $options);
 
 // エラーチェック
+        $result = curl_exec($ch);
         $errno = curl_errno($ch);
         if ($errno) {
             return;
