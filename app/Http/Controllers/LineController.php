@@ -13,66 +13,59 @@ class LineController extends Controller
 
     public function callback()
     {
-        // まずは HTTPステータス 200 を返す
-        http_response_code(200) ;
-        echo '200 {}';
+        $accessToken = '***REMOVED_LINE_ACCESS_TOKEN***=';
 
-// 送られて来たJSONデータを取得
+        //ユーザーからのメッセージ取得
         $json_string = file_get_contents('php://input');
-        $json = json_decode($json_string);
-// JSONデータから返信先を取得
-        $replyToken = $json->events[0]->replyToken;
-// JSONデータから送られてきたメッセージを取得
-        $message = $json->events[0]->message->text;
 
-// HTTPヘッダを設定
-        $channelToken = '***REMOVED_LINE_ACCESS_TOKEN***=';
-        $headers = [
-            'Authorization: Bearer ' . $channelToken,
-            'Content-Type: application/json; charset=utf-8',
-        ];
+        if($json_string){
+            $json_object = json_decode($json_string);
+            $userId = $json_object->{"events"}[0]->{"source"}->{"userId"};
 
-// POSTデータを設定してJSONにエンコード
-        $post = [
-            'replyToken' => $replyToken,
-            'messages' => [
-                [
-                    'type' => 'text',
-                    'text' => '「' . $message . '」',
-                ],
-            ],
-        ];
-        $post = json_encode($post);
+            //取得データ
+            $replyToken = $json_object->{"events"}[0]->{"replyToken"};        //返信用トークン
+            $message_type = $json_object->{"events"}[0]->{"message"}->{"type"};    //メッセージタイプ
+            $message_text = $json_object->{"events"}[0]->{"message"}->{"text"};    //メッセージ内容
 
-// HTTPリクエストを設定
-        $ch = curl_init('https://api.line.me/v2/bot/message/reply');
-        $options = [
-            CURLOPT_CUSTOMREQUEST => 'POST',
-            CURLOPT_HTTPHEADER => $headers,
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_BINARYTRANSFER => true,
-            CURLOPT_HEADER => true,
-            CURLOPT_POSTFIELDS => $post,
-        ];
+            //メッセージタイプが「text」以外のときは何も返さず終了
+            if($message_type != "text") exit;
 
-// 実行
-        curl_setopt_array($ch, $options);
+            //返信メッセージ
+            $return_message_text = "「" . $message_text . "」なの？";
 
-// エラーチェック
-        $result = curl_exec($ch);
-        $errno = curl_errno($ch);
-        if ($errno) {
-            return;
+            //返信実行
+            $this->sending_messages($accessToken, $replyToken, $message_type, $return_message_text);
         }
+    }
 
-// HTTPステータスを取得
-        $info = curl_getinfo($ch);
-        $httpStatus = $info['http_code'];
+    // メッセージの送信
+    private function sending_messages($accessToken, $replyToken, $message_type, $return_message_text){
 
-        $responseHeaderSize = $info['header_size'];
-        $body = substr($result, $responseHeaderSize);
+        http_response_code(200);
 
-// 200 だったら OK
-        echo $httpStatus . ' ' . $body;
+        //レスポンスフォーマット
+        $response_format_text = [
+            "type" => $message_type,
+            "text" => $return_message_text
+        ];
+
+        //ポストデータ
+        $post_data = [
+            "replyToken" => $replyToken,
+            "messages" => [$response_format_text]
+        ];
+
+        //curl実行
+        $ch = curl_init("https://api.line.me/v2/bot/message/reply");
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($post_data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/json; charser=UTF-8',
+            'Authorization: Bearer ' . $accessToken
+        ));
+        $result = curl_exec($ch);
+        curl_close($ch);
     }
 }
