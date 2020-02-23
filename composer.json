@@ -13,6 +13,7 @@
         "jwilsson/spotify-web-api-php": "^3.0",
         "laravel/framework": "5.8.*",
         "laravel/tinker": "^1.0",
+        "linecorp/line-bot-sdk": "^4.2",
         "olssonm/l5-very-basic-auth": "5.*"
     },
     "require-dev": {
