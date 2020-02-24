@@ -24,6 +24,7 @@ class LineWebhookController extends Controller
 
         if (!SignatureValidator::validateSignature($request->getContent(), $lineChannelSecret, $signature)) {
             // TODO 不正アクセス
+            \Log::info('不正アクセス');
             return;
         }
 
