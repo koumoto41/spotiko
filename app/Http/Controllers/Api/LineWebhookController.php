@@ -42,7 +42,7 @@ class LineWebhookController extends Controller
                     continue;
                 }
 
-                $textMessage = new TextMessageBuilder("やんのかこら");
+                $textMessage = new TextMessageBuilder("わかる〜〜");
                 $lineBot->replyMessage($replyToken, $textMessage);
             }
         } catch (Exception $e) {
