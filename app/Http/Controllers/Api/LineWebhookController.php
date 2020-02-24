@@ -16,15 +16,15 @@ class LineWebhookController extends Controller
 {
     public function webhook(Request $request)
     {
-        $lineAccessToken = env('LINE_ACCESS_TOKEN', "");
-        $lineChannelSecret = env('LINE_CHANNEL_SECRET', "");
+        $lineAccessToken = config('my-app.LINE_ACCESS_TOKEN');
+        $lineChannelSecret = config('my-app.LINE_CHANNEL_SECRET');
 
         // 署名のチェック
         $signature = $request->headers->get(HTTPHeader::LINE_SIGNATURE);
 
         if (!SignatureValidator::validateSignature($request->getContent(), $lineChannelSecret, $signature)) {
             // TODO 不正アクセス
-            \Log::info('不正アクセス');
+            \Log::info('不正アクセス:'.$signature);
             return;
         }
 
