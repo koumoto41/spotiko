@@ -11,16 +11,17 @@ use LINE\LINEBot\HTTPClient\CurlHTTPClient;
 use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 use Exception;
 
+
 class LineWebhookController extends Controller
 {
-
-    public function webhook (Request $request)
+    public function webhook(Request $request)
     {
         $lineAccessToken = env('LINE_ACCESS_TOKEN', "");
         $lineChannelSecret = env('LINE_CHANNEL_SECRET', "");
 
         // 署名のチェック
         $signature = $request->headers->get(HTTPHeader::LINE_SIGNATURE);
+
         if (!SignatureValidator::validateSignature($request->getContent(), $lineChannelSecret, $signature)) {
             // TODO 不正アクセス
             return;
@@ -34,13 +35,18 @@ class LineWebhookController extends Controller
             $events = $lineBot->parseEventRequest($request->getContent(), $signature);
 
             foreach ($events as $event) {
-                // ハローと応答する
                 $replyToken = $event->getReplyToken();
-                $textMessage = new TextMessageBuilder("ハロー");
+
+                if ($replyToken == "00000000000000000000000000000000") {
+                    continue;
+                }
+
+                $textMessage = new TextMessageBuilder("やんのかこら");
                 $lineBot->replyMessage($replyToken, $textMessage);
             }
         } catch (Exception $e) {
             // TODO 例外
+            \Log::info($e->getMessage());
             return;
         }
 

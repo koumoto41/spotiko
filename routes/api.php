@@ -18,6 +18,5 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['namespace' => 'Api'], function() {
-    // LineからのWebhookを受信
-    Route::post('/webhook', 'LineWebhookController@webhook');
+    Route::post('/webhook', 'LineWebhookController@webhook')->name('line.webhook');
 });
