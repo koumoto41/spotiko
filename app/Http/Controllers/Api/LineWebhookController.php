@@ -4,53 +4,52 @@ namespace App\Http\Controllers\Api;
 
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use LINE\LINEBot;
-use LINE\LINEBot\Constant\HTTPHeader;
-use LINE\LINEBot\SignatureValidator;
-use LINE\LINEBot\HTTPClient\CurlHTTPClient;
-use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 use Exception;
-
+use App\Library\SpotifyApi;
+use App\Library\LineMessageApi;
 
 class LineWebhookController extends Controller
 {
+    protected $spotify_api_library;
+    protected $line_message_api_library;
+
+    public function __construct(
+        SpotifyApi $spotify_api_library,
+        LineMessageApi $line_message_api_library)
+    {
+        parent::__construct();
+
+        $this->spotify_api_library = $spotify_api_library;
+        $this->line_message_api_library = $line_message_api_library;
+    }
+
     public function webhook(Request $request)
     {
-        $lineAccessToken = config('my-app.LINE_ACCESS_TOKEN');
-        $lineChannelSecret = config('my-app.LINE_CHANNEL_SECRET');
-
-        // 署名のチェック
-        $signature = $request->headers->get(HTTPHeader::LINE_SIGNATURE);
-
-        if (!SignatureValidator::validateSignature($request->getContent(), $lineChannelSecret, $signature)) {
-            // TODO 不正アクセス
-            \Log::info('不正アクセス:'.$signature);
-            return;
+        try {
+            $signature = $this->line_message_api_library->get_signature($request);
+        } catch (Exception $e) {
+            \Log::info($e->getMessage());
         }
 
-        $httpClient = new CurlHTTPClient ($lineAccessToken);
-        $lineBot = new LINEBot($httpClient, ['channelSecret' => $lineChannelSecret]);
+        $line_bot = $this->line_message_api_library->get_line_bot_object();
 
         try {
-            // イベント取得
-            $events = $lineBot->parseEventRequest($request->getContent(), $signature);
+            $events = $this->line_message_api_library->get_events($request, $line_bot, $signature);
 
             foreach ($events as $event) {
-                $replyToken = $event->getReplyToken();
+                $reply_token = $this->line_message_api_library->get_reply_token($event);
 
-                if ($replyToken == "00000000000000000000000000000000") {
+                if ($reply_token == "00000000000000000000000000000000") {
                     continue;
                 }
 
-                $textMessage = new TextMessageBuilder("わかる〜〜");
-                $lineBot->replyMessage($replyToken, $textMessage);
+                $reply_message = 'わかる〜〜';
+                $this->line_message_api_library->set_reply_message($reply_message, $reply_token, $line_bot);
             }
         } catch (Exception $e) {
-            // TODO 例外
             \Log::info($e->getMessage());
             return;
         }
-
         return;
     }
 }
