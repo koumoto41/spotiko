@@ -102,4 +102,14 @@ class LineMessageApi
     {
         $line_bot->replyMessage($reply_token, new TextMessageBuilder($reply_message));
     }
+
+    /**
+     * @param $line_user_id
+     * @param $send_messages
+     * @param $line_bot
+     */
+    public function set_push_message($line_user_id, $send_messages, $line_bot)
+    {
+        $line_bot->pushMessage($line_user_id, new TextMessageBuilder($send_messages));
+    }
 }
