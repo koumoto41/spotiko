@@ -179,6 +179,18 @@ class SpotifyApi
         return $this->api->getAudioFeatures($track_id);
     }
 
+    public function get_new_releases($user_id, $limit = 20, $offset = 0)
+    {
+        $this->set_access_token($user_id);
+
+        $option = [
+            'limit' => $limit,
+            'offset' => $offset,
+        ];
+
+        return $this->api->getNewReleases($option);
+    }
+
 }
 
 
