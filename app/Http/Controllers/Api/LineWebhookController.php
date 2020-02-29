@@ -151,7 +151,7 @@ class LineWebhookController extends Controller
         foreach ($new_releases_item as $key => $new_release) {
             $temp[$key]['artist_name'] = current($new_release->artists)->name;
             $temp[$key]['album_name'] = $new_release->name;
-            $temp[$key]['album_url'] = $new_release->href;
+            $temp[$key]['album_url'] = $new_release->external_urls->spotify;
         }
         shuffle($temp);
 
