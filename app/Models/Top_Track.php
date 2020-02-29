@@ -122,18 +122,43 @@ class Top_Track extends Model
 
     /**
      * @param $aggregate_date
+     * @param bool $rand
      * @return \Illuminate\Support\Collection
      */
-    public function get_top_track_by_aggregate_date($aggregate_date)
+    public function get_top_track_by_aggregate_date($aggregate_date, $rand = false, $duplicate = true)
     {
-        return DB::table($this->table)
+        $top_track = DB::table($this->table)
             ->join('track', 'top_track.track_id', '=', 'track.id')
             ->join('artist', 'top_track.artist_id', '=', 'artist.id')
             ->join('album', 'top_track.album_id', '=', 'album.id')
-            ->where('target_date', $aggregate_date)
-            ->latest('target_date')
-            ->select('album.name AS album_name', 'track.name AS track_name',  'artist.name AS artist_name')
-            ->get();
+            ->where('target_date', $aggregate_date);
+
+        if ($rand) {
+            $top_track = $top_track->inRandomOrder();
+        } else {
+            $top_track = $top_track->latest('target_date');
+        }
+
+        return $top_track->select('album.name AS album_name', 'track.name AS track_name', 'artist.name AS artist_name', 'artist.url AS artist_url', 'track.url AS track_url')->get();
+    }
+
+    /**
+     * LINEBOTレコメンド用のデータ吐き出し
+     * @return string
+     */
+    public function get_recommend_track_for_line_bot()
+    {
+        $target_date = $this->get_aggregate_date(true);
+        $top_track = $this->get_top_track_by_aggregate_date($target_date, $rand = true);
+
+        $result = '';
+        foreach ($top_track as $key => $value){
+            if ($key == 5) {
+                break;
+            }
+            $result .= "{$value->track_name} - {$value->album_name}\n{$value->artist_name}\n{$value->track_url}\n\n";
+        }
+        return $result;
     }
 
 }

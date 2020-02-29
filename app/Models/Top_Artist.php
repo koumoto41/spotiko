@@ -115,14 +115,38 @@ class Top_Artist extends Model
 
     /**
      * @param $aggregate_date
+     * @param bool $rand
      * @return \Illuminate\Support\Collection
      */
-    public function get_top_artist_by_aggregate_date($aggregate_date)
+    public function get_top_artist_by_aggregate_date($aggregate_date, $rand = false)
     {
-        return DB::table($this->table)
+        $top_artist = DB::table($this->table)
             ->join('artist', 'top_artist.artist_id', '=', 'artist.id')
-            ->where('target_date', $aggregate_date)
-            ->latest('target_date')
-            ->get();
+            ->where('target_date', $aggregate_date);
+
+        if ($rand) {
+            $top_artist = $top_artist->inRandomOrder();
+        } else {
+            $top_artist = $top_artist->latest('target_date');
+        }
+        return $top_artist->get();
+    }
+
+    /**
+     * @return string
+     */
+    public function get_recommend_artist_for_line_bot()
+    {
+        $target_date = $this->get_aggregate_date(true);
+        $top_artist = $this->get_top_artist_by_aggregate_date($target_date, $rand = true);
+
+        $result = '';
+        foreach ($top_artist as $key => $value){
+            if ($key == 5) {
+                break;
+            }
+            $result .= "{$value->name}\n{$value->url}\n\n";
+        }
+        return $result;
     }
 }
