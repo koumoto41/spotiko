@@ -17,8 +17,6 @@ class LineWebhookController extends Controller
         SpotifyApi $spotify_api_library,
         LineMessageApi $line_message_api_library)
     {
-        parent::__construct();
-
         $this->spotify_api_library = $spotify_api_library;
         $this->line_message_api_library = $line_message_api_library;
     }
