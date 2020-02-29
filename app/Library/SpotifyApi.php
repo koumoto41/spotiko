@@ -191,6 +191,18 @@ class SpotifyApi
         return $this->api->getNewReleases($option);
     }
 
+    public function get_feature_playlist($user_id, $limit = 20, $offset = 0)
+    {
+        $this->set_access_token($user_id);
+
+        $option = [
+            'limit' => $limit,
+            'offset' => $offset,
+        ];
+
+        return $this->api->getFeaturedPlaylists($option);
+    }
+
 }
 
 
