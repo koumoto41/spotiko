@@ -10,6 +10,8 @@ use LINE\LINEBot\MessageBuilder\TextMessageBuilder;
 
 class LineMessageApi
 {
+    const EXCLUSION_REPLY_TOKEN_LIST = ['00000000000000000000000000000000'];
+
     private $line_access_token;
     private $line_channel_secret;
 
@@ -47,6 +49,7 @@ class LineMessageApi
     }
 
     /**
+     * リクエストイベントの取得
      * @param $request
      * @param $line_bot
      * @param $signature
@@ -58,6 +61,7 @@ class LineMessageApi
     }
 
     /**
+     * 返信用トークンの取得
      * @param $event
      * @return mixed
      */
@@ -67,6 +71,29 @@ class LineMessageApi
     }
 
     /**
+     * 無効な返信用トークンの判定
+     * @param $reply_token
+     * @return bool
+     */
+    public function exist_exclusion_reply_token($reply_token)
+    {
+        if (in_array($reply_token, self::EXCLUSION_REPLY_TOKEN_LIST)) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * 送信されたメッセージの取得
+     * @param $event
+     * @return mixed
+     */
+    public function get_text($event) {
+        return $event->getText();
+    }
+
+    /**
+     * 返信メッセージ作成
      * @param $reply_message
      * @param $reply_token
      * @param $line_bot
