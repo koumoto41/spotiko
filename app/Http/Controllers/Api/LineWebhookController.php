@@ -56,6 +56,8 @@ class LineWebhookController extends Controller
         try {
             $events = $this->line_message_api_library->get_events($request, $line_bot_object, $signature);
 
+            \Log::info($events);
+
             foreach ($events as $event) {
                 $reply_token = $this->line_message_api_library->get_reply_token($event);
 
