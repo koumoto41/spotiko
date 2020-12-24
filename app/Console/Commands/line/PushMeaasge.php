@@ -25,6 +25,12 @@ class PushMeaasge extends Command
 
         foreach (self::LINE_USER_ID as $line_user_id) {
             $this->line_message_api_library->set_push_message($line_user_id, 'わかる〜', $line_bot_object);
+
+
+
+
+
+
         }
     }
 }

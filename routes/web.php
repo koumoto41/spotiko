@@ -17,3 +17,5 @@ Route::group(['middleware' => 'auth.very_basic'], function() {
     Route::get('/aggregate/track', 'AggregateController@aggregate_track');
     Route::get('/', 'DisplayController@page_top');
 });
+
+Route::get('/line', 'DisplayController@line_test');

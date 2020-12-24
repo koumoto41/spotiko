@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models;
+use App\Library\SpotifyApi;
 
 
 /**
@@ -18,8 +19,12 @@ use App\Models;
  */
 class DisplayController extends Controller
 {
-    public function __construct()
+    protected $spotify_api_library;
+
+    public function __construct(SpotifyApi $spotify_api_library)
     {
+        $this->spotify_api_library = $spotify_api_library;
+
         $this->artist_model = new Models\Artist();
         $this->track_model = new Models\Track();
         $this->artist_genre_model = new Models\Artist_Genre();
@@ -43,24 +48,38 @@ class DisplayController extends Controller
 
         $data['track'] = $this->top_track_model->get_top_track_by_aggregate_date($data['display_track_date']);
 
-
-
-
-
-
-
-
-
         return view('top', $data);
 
     }
 
+    public function line_test()
+    {
+        $value = $this->create_feature_playlist_content();
 
+        var_dump($value);
+    }
 
+    private function create_feature_playlist_content()
+    {
+        $this->spotify_api_library->refresh_access_token(1);
+        $feature_playlist = $this->spotify_api_library->get_feature_playlist(1, $limit = 50);
 
+        $playlist_items = $feature_playlist->playlists->items;
+        $result = '';
+        $temp = [];
 
+        foreach ($playlist_items as $key => $playlist) {
+            $temp[$key]['name'] = $playlist->name;
+            $temp[$key]['url'] = $playlist->external_urls->spotify;
+        }
+        shuffle($temp);
 
-
-
-
+        foreach ($temp as $key => $value) {
+            if ($key == 5) {
+                break;
+            }
+            $result .= "{$value['name']}\n{$value['url']}\n\n";
+        }
+        return $result;
+    }
 }
