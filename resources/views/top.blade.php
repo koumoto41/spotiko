@@ -1,4 +1,4 @@
-@extends('layout')
+@extends('templates.layout')
 
 @section('title', 'MY TOP')
 
