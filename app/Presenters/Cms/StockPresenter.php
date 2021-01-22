@@ -60,6 +60,12 @@ class StockPresenter
 
         foreach ($data as $row_number => $item) {
 
+            $this->table_presenter->set_td($row_number, [
+                view('cms.parts.image')->with(['url' => $item->img_64]),
+                e($item->album_name),
+                e($item->artist_name),
+                e($item->created_at),
+            ]);
 
         }
     }
