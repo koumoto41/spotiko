@@ -16,6 +16,8 @@ Route::group(['middleware' => 'auth.very_basic'], function() {
     Route::get('/aggregate/artist', 'AggregateController@aggregate_artist');
     Route::get('/aggregate/track', 'AggregateController@aggregate_track');
     Route::get('/', 'DisplayController@page_top');
+
+    Route::get('/cms/stock', 'Cms\MyAlbumController@my_album_list');
 });
 
 Route::get('/line', 'DisplayController@line_test');
