@@ -8,10 +8,10 @@
             </tr>
         </thead>
         <tbody>
-                @foreach ($tag_table['td'] as $value)
+                @foreach ($table['td'] as $value)
                 <tr>
                     @foreach ($value as $item)
-                        <td>{{ e($item) }}</td>
+                        <td>{!! $item !!}</td>
                     @endforeach
                 </tr>
                 @endforeach

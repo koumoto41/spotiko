@@ -21,8 +21,9 @@ class StockController extends Controller
 
         try {
             $my_album = $this->stock_presenter->get_my_album_list('', self::LIST_LIMIT, 0);
-        } catch (\Exception $e) {
 
+        } catch (\Exception $e) {
+            return false;
         }
 
         $data['count'] = $my_album['count'];
@@ -42,7 +43,6 @@ class StockController extends Controller
 
 
 
-
-       return view('cms.stock.lists')->with($data);
+        return view('cms.stock.lists')->with($data);
     }
 }
