@@ -6,7 +6,7 @@
 
 namespace App\Presenters\Cms;
 
-use App\Models\My_Album;
+use App\Models;
 use App\Presenters;
 
 class StockPresenter
@@ -14,17 +14,19 @@ class StockPresenter
     const LIST_TABLE_TH = ['画像', 'アルバム名', 'アーティスト名', '登録年月日'];
 
     private $my_album_model;
+    private $album_model;
     private $table_presenter;
 
     public function __construct()
     {
-        $this->my_album_model = new My_Album();
+        $this->my_album_model = new Models\My_Album();
+        $this->album_model = new Models\Album();
         $this->table_presenter = new Presenters\TablePresenter();
     }
 
     public function get_my_album_list($query, $limit, $offset)
     {
-        $obj_my_album = $this->my_album_model->get_my_album($query, 'album', $limit, $offset);
+        $obj_my_album = $this->my_album_model->get_my_album($query, $limit, $offset);
 
         return [
             'count' => $obj_my_album->count(),
@@ -32,6 +34,15 @@ class StockPresenter
             'paginame' => $obj_my_album->paginate($limit)
         ];
     }
+
+    public function get_album_list($params, $limit, $offset)
+    {
+        $obj_album = $this->album_model->get_album_list($params, $limit, $offset);
+        return $obj_album->toArray();
+    }
+
+
+
 
     public function get_table_view($data)
     {

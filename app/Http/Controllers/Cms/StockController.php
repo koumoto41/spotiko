@@ -18,10 +18,8 @@ class StockController extends Controller
 
     public function top()
     {
-
         try {
             $my_album = $this->stock_presenter->get_my_album_list('', self::LIST_LIMIT, 0);
-
         } catch (\Exception $e) {
             return false;
         }
@@ -30,19 +28,15 @@ class StockController extends Controller
         $data['table_view'] = $this->stock_presenter->get_table_view($my_album['list']);
         $data['paginame'] = $my_album['paginame'];
 
-
-//        $data['search_form_view'] = $this->load->view('parts/search_form', [
-//            'search_forms' => $this->company_presenter->get_search_block_view()
-//        ], true);
-//
-//        $this->load_view('company/list', $data);
-
-
-
-
-
-
-
         return view('cms.stock.lists')->with($data);
+    }
+
+    public function form()
+    {
+        $data['albums'] = $this->stock_presenter->get_album_list('', 10000, 0);
+
+
+
+        return view('cms.stock.form')->with($data);
     }
 }

@@ -18,7 +18,7 @@ class My_Album extends Model
         $this->now = date('Y-m-d H:i:s');
     }
 
-    public function get_my_album($query, $type, $limit, $offset)
+    public function get_my_album($query, $limit, $offset)
     {
         $getting_columns = [
             'album.name AS album_name',
