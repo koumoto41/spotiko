@@ -32,7 +32,7 @@ class My_Album extends Model
             $my_album_query = $my_album_query->where('artist.name', 'like', "%{$query}%");
         }
 
-        return $my_album_query->get();
+        return $my_album_query;
     }
 
 
