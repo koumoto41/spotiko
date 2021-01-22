@@ -18,6 +18,7 @@ Route::group(['middleware' => 'auth.very_basic'], function() {
     Route::get('/', 'DisplayController@page_top');
 
     Route::get('/cms/stock', 'Cms\StockController@top');
+    Route::get('/cms/stock/form', 'Cms\StockController@form');
 });
 
 Route::get('/line', 'DisplayController@line_test');
