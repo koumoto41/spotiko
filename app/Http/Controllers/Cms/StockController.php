@@ -19,7 +19,7 @@ class StockController extends Controller
     public function top()
     {
         try {
-            $my_album = $this->stock_presenter->get_my_album_list('', self::LIST_LIMIT, 0);
+            $my_album = $this->stock_presenter->get_my_album_list('', 'album', self::LIST_LIMIT, 0);
         } catch (\Exception $e) {
             return false;
         }
@@ -31,11 +31,19 @@ class StockController extends Controller
         return view('cms.stock.lists')->with($data);
     }
 
-    public function form()
+    public function form(Request $request)
     {
-        $data['albums'] = $this->stock_presenter->get_album_list('', 10000, 0);
+        $data['page'] = $request->input('page') ?? 1;
+        $data['query'] = $request->input('query');
+        $offset = self::LIST_LIMIT * ($data['page'] - 1);
 
+        $result = [];
+        if ($data['query']) {
+            $result = $this->stock_presenter->search_album_from_spotify($data['query'], self::LIST_LIMIT, $offset);
+        }
 
+        $data['count'] = count($result);
+        $data['table_view'] = $this->stock_presenter->get_table_view($result, 'spotify');
 
         return view('cms.stock.form')->with($data);
     }
