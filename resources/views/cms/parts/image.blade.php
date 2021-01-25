@@ -1,1 +1,1 @@
-<p><img src="{{ $url }}" class="img-responsive"></p>
+<p><img src="{{ $url }}" class="img-responsive" style="width:100px"></p>

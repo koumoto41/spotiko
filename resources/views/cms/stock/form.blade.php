@@ -7,23 +7,36 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
-                    <div class="card">
-                        <form action="{{ url('cms/stock/form') }}" method="post" accept-charset="utf-8">
+                    <form action="{{ url('cms/stock/form') }}" method="get" accept-charset="utf-8">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="card-title">Spotify APIから検索</h3>
+                            </div>
                             <div class="card-body">
                                 <div class="form-group">
-                                    <label for="album">登録済アルバム</label>
-                                    <select name="album" class="form-control">
-                                        <option value="" selected="selected">選択して下さい</option>
-                                        @foreach($albums as $album)
-                                            <option value="{{ $album->album_id }}">{{ $album->album_name }}【{{ $album->artist_name }}】</option>
-                                        @endforeach
-                                    </select>
+                                    <label for="album">検索キーワード</label>
+                                    <input name="query" type="text" class="form-control">
                                 </div>
                             </div>
-                            <div class="card-footer">
-                                <button type="submit" class="btn btn-primary">登録</button>
+                            <div class="card-footer text-right">
+                                <button class="btn btn-primary text-white" type="submit">検索</button>
                             </div>
-                        </form>
+                        </div>
+                    </form>
+
+                    <div class="card">
+                        <div class="card-header">
+                            <b>{{ $query }}</b> に関連するアルバムを検索しています
+                        </div>
+                        {!! $table_view !!}
+                        <div class="card-footer clearfix text-right">
+                            <div class="btn-group">
+                                @if ($page > 1)
+                                    <a href="<?= url()->full() . '&page=' . ($page - 1) ?>" class="btn btn-default">前へ</a>
+                                @endif
+                                <a href="<?= url()->full() . '&page=' . ($page + 1) ?>" class="btn btn-default">次へ</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -134,6 +134,8 @@ class SpotifyApi
      */
     private function set_access_token($user_id)
     {
+        $this->refresh_access_token($user_id);
+
         $token_data = $this->token_model->get_data_by_user_id($user_id);
         $this->api->setAccessToken($token_data->token);
     }
