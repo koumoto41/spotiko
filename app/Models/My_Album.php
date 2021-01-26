@@ -55,6 +55,7 @@ class My_Album extends Model
             ->select($getting_columns)
             ->Join('album', 'my_album.album_id', '=', 'album.id')
             ->Join('artist', 'album.artist_id', '=', 'artist.id')
+            ->orderByRaw('artist.name, album.name')
             ->offset($offset)
             ->limit($limit);
 
