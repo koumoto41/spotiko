@@ -18,6 +18,11 @@ class My_Album extends Model
         $this->now = date('Y-m-d H:i:s');
     }
 
+    public function exist_my_album($album_id)
+    {
+        return DB::table($this->table)->where('album_id', $album_id)->exists();
+    }
+
     public function get_my_album($query, $type, $limit, $offset)
     {
         $getting_columns = [
@@ -44,6 +49,13 @@ class My_Album extends Model
         }
 
         return $my_album_query;
+    }
+
+    public function insert_my_album($my_album)
+    {
+        $my_album_object = new My_Album;
+        $my_album_object->fill($my_album);
+        $my_album_object->save();
     }
 
 }

@@ -25,11 +25,7 @@ class Album extends Model
      */
     public function exist_album($spotify_id)
     {
-        $data = DB::table($this->table)->where('spotify_id', $spotify_id)->first();
-        if ($data) {
-            return true;
-        }
-        return false;
+        return DB::table($this->table)->where('spotify_id', $spotify_id)->exists();
     }
 
     /**
