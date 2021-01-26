@@ -243,9 +243,9 @@ return [
         ],
         ['header' => 'account_settings'],
         [
-            'text' => 'profile',
-            'url'  => 'admin/settings',
-            'icon' => 'fas fa-fw fa-user',
+            'text' => 'STOCK',
+            'url'  => 'cms/stock',
+            'icon' => 'fas fa-compact-disc',
         ],
         [
             'text' => 'change_password',
