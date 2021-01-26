@@ -23,6 +23,14 @@ class My_Album extends Model
         return DB::table($this->table)->where('album_id', $album_id)->exists();
     }
 
+    /**
+     * 持ってるアルバムの一覧を取得
+     * @param $query
+     * @param $type
+     * @param $limit
+     * @param $offset
+     * @return \Illuminate\Database\Query\Builder
+     */
     public function get_my_album($query, $type, $limit, $offset)
     {
         $getting_columns = [
@@ -51,6 +59,10 @@ class My_Album extends Model
         return $my_album_query;
     }
 
+    /**
+     * 持ってるアルバムの登録
+     * @param $my_album
+     */
     public function insert_my_album($my_album)
     {
         $my_album_object = new My_Album;
