@@ -137,6 +137,11 @@ class StockPresenter
         }
     }
 
+    /**
+     * My Albumへの登録処理を行う
+     * @param $artist_spotify_id
+     * @param $album_spotify_id
+     */
     public function register_my_album($artist_spotify_id, $album_spotify_id)
     {
         if (!$this->artist_model->exist_artist($artist_spotify_id)) {
