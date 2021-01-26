@@ -16,10 +16,13 @@ class StockController extends Controller
         $this->stock_presenter = new Presenters\Cms\StockPresenter();
     }
 
-    public function top()
+    public function top(Request $request)
     {
+        $data['page'] = (int)$request->input('page') ? (int)$request->input('page') : 1;
+        $offset = self::LIST_LIMIT * ($data['page'] - 1);
+
         try {
-            $my_album = $this->stock_presenter->get_my_album_list('', 'album', self::LIST_LIMIT, 0);
+            $my_album = $this->stock_presenter->get_my_album_list('', 'album', self::LIST_LIMIT, $offset);
         } catch (\Exception $e) {
             return false;
         }
