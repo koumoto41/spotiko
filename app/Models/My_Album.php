@@ -23,6 +23,14 @@ class My_Album extends Model
         return DB::table($this->table)->where('album_id', $album_id)->exists();
     }
 
+    public function exist_my_album_by_spotify_id($spotify_id)
+    {
+        return DB::table($this->table)
+            ->Join('album', 'my_album.album_id', '=', 'album.id')
+            ->where('album.spotify_id', $spotify_id)
+            ->exists();
+    }
+
     /**
      * 持ってるアルバムの一覧を取得
      * @param $query
