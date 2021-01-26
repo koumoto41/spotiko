@@ -162,7 +162,7 @@ class StockPresenter
         }
         $register_artist_id = $this->artist_model->get_artist_id_by_spotify_id($artist_spotify_id);
 
-        if (!$this->album_model->exist_album($artist_spotify_id)) {
+        if (!$this->album_model->exist_album($album_spotify_id)) {
             // アルバム情報の登録が無ければ追加する
             $album = $this->spotify_api_library->get_album_by_id(1, $album_spotify_id);
             $album_array = $this->album_model->set_album_array($album, $register_artist_id);
