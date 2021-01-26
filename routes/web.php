@@ -16,6 +16,10 @@ Route::group(['middleware' => 'auth.very_basic'], function() {
     Route::get('/aggregate/artist', 'AggregateController@aggregate_artist');
     Route::get('/aggregate/track', 'AggregateController@aggregate_track');
     Route::get('/', 'DisplayController@page_top');
+
+    Route::get('/cms/stock', 'Cms\StockController@top');
+    Route::get('/cms/stock/form', 'Cms\StockController@form');
+    Route::post('/ajax/register/my_album', 'Cms\StockController@register');
 });
 
 Route::get('/line', 'DisplayController@line_test');
