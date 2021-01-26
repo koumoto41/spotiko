@@ -29,13 +29,7 @@ class Artist extends Model
      */
     public function exist_artist($spotify_id)
     {
-
-        $data = DB::table($this->table)->where('spotify_id', $spotify_id)->first();
-
-        if ($data) {
-            return true;
-        }
-        return false;
+        return DB::table($this->table)->where('spotify_id', $spotify_id)->exists();
     }
 
     public function get_artist_id_by_spotify_id($spotify_id)

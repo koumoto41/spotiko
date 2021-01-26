@@ -25,11 +25,7 @@ class Album extends Model
      */
     public function exist_album($spotify_id)
     {
-        $data = DB::table($this->table)->where('spotify_id', $spotify_id)->first();
-        if ($data) {
-            return true;
-        }
-        return false;
+        return DB::table($this->table)->where('spotify_id', $spotify_id)->exists();
     }
 
     /**
@@ -91,4 +87,26 @@ class Album extends Model
         $album_object->save();
     }
 
+    /**
+     * アルバム一覧を取得
+     * @param $params
+     * @param $limit
+     * @param $offset
+     * @return \Illuminate\Support\Collection
+     */
+    public function get_album_list($params, $limit, $offset)
+    {
+        $getting_columns = [
+            'album.id AS album_id',
+            'album.name AS album_name',
+            'artist.name AS artist_name',
+        ];
+
+        return DB::table($this->table)
+            ->select($getting_columns)
+            ->Join('artist', 'album.artist_id', '=', 'artist.id')
+            ->offset($offset)
+            ->limit($limit)
+            ->get();
+    }
 }
