@@ -62,7 +62,8 @@ class StockPresenter
                 'type' => $item->type,
                 'artist_name' => $item->artists[0]->name,
                 'artist_spotify_id' => $item->artists[0]->id,
-                'image' => $item->images[0]->url ?? ''
+                'image' => $item->images[0]->url ?? '',
+                'is_register' => $this->my_album_model->exist_my_album_by_spotify_id($item->id)
             ];
         }
         return $result;
@@ -120,11 +121,17 @@ class StockPresenter
         if (!$data) {
             return [];
         }
-
+        
         foreach ($data as $row_number => $item) {
+
+            $register_badge = '';
+            if ($item['is_register']) {
+                $register_badge = view('cms.parts.badge')->with(['type' => 'danger', 'text' => '登録済'])  .'<br>';
+            }
+
             $this->table_presenter->set_td($row_number, [
                 view('cms.parts.image')->with(['url' => $item['image']]),
-                e($item['album_name']),
+                $register_badge . e($item['album_name']),
                 e($item['artist_name']),
                 e($item['release_date']),
                 view('cms.parts.button_js')->with([
