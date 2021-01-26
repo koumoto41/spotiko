@@ -47,4 +47,20 @@ class StockController extends Controller
 
         return view('cms.stock.form')->with($data);
     }
+
+    public function register(Request $request)
+    {
+        $artist_id = $request->input('artist_id');
+        $album_id = $request->input('album_id');
+
+        try {
+            $this->stock_presenter->register_my_album($artist_id, $album_id);
+        } catch (\Exception $e) {
+            return response(json_encode(['message' => $e->getMessage()]), 400)
+                ->header('Content-Type', 'application/json');
+        }
+
+        return response(json_encode(['message' => 'success']), 200)
+            ->header('Content-Type', 'application/json');
+    }
 }

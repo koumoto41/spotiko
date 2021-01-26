@@ -13,10 +13,13 @@ use App\Library\SpotifyApi;
 class StockPresenter
 {
     const TOP_TABLE_TH = ['画像', 'アルバム名', 'アーティスト名', '登録年月日'];
-    const SPOTIFT_ALBUM_TABLE_TH = ['画像', 'アルバム名', 'アーティスト名', 'リリース年'];
+    const SPOTIFT_ALBUM_TABLE_TH = ['画像', 'アルバム名', 'アーティスト名', 'リリース年', '追加'];
 
     private $my_album_model;
     private $album_model;
+    private $artist_model;
+    private $artist_genre_model;
+    private $artist_genre_map_model;
     private $table_presenter;
     private $spotify_api_library;
 
@@ -25,6 +28,9 @@ class StockPresenter
         $this->spotify_api_library = new SpotifyApi();
         $this->my_album_model = new Models\My_Album();
         $this->album_model = new Models\Album();
+        $this->artist_model = new Models\Artist();
+        $this->artist_genre_model = new Models\Artist_Genre();
+        $this->artist_genre_map_model = new Models\Artist_Genre_Map();
         $this->table_presenter = new Presenters\TablePresenter();
     }
 
@@ -51,10 +57,11 @@ class StockPresenter
         foreach ($obj->albums->items as $item) {
             $result[] = [
                 'album_name' => $item->name,
-                'spotify_id' => $item->id,
+                'album_spotify_id' => $item->id,
                 'release_date' => $item->release_date,
                 'type' => $item->type,
-                'artist_name' => $item->artists[0]->name ?? '',
+                'artist_name' => $item->artists[0]->name,
+                'artist_spotify_id' => $item->artists[0]->id,
                 'image' => $item->images[0]->url ?? ''
             ];
         }
@@ -120,7 +127,45 @@ class StockPresenter
                 e($item['album_name']),
                 e($item['artist_name']),
                 e($item['release_date']),
+                view('cms.parts.button_js')->with([
+                    'text' => '追加',
+                    'type' => 'danger',
+                    'extra' => 'data-album_id="'.e($item['album_spotify_id']).'" data-artist_id="'.e($item['artist_spotify_id']).'"',
+                    'class' => 'btn-register'
+                ])
             ]);
         }
+    }
+
+    public function register_my_album($artist_spotify_id, $album_spotify_id)
+    {
+        if (!$this->artist_model->exist_artist($artist_spotify_id)) {
+            // アーティスト情報の登録が無ければ追加する
+            $artist = $this->spotify_api_library->get_artist_by_id(1, $artist_spotify_id);
+            $artist_array = $this->artist_model->set_artist_array($artist);
+            $genre_array = $this->artist_genre_model->put_artist_genre_array($artist_array);
+            $this->artist_model->insert_update_artist($artist_array);
+            $this->artist_genre_model->insert_update_genre($genre_array);
+            $this->artist_genre_map_model->set_artist_genre_map($artist_array);
+        }
+        $register_artist_id = $this->artist_model->get_artist_id_by_spotify_id($artist_spotify_id);
+
+        if (!$this->album_model->exist_album($artist_spotify_id)) {
+            // アルバム情報の登録が無ければ追加する
+            $album = $this->spotify_api_library->get_album_by_id(1, $album_spotify_id);
+            $album_array = $this->album_model->set_album_array($album, $register_artist_id);
+            $this->album_model->insert_album($album_array);
+        }
+        $register_album_id = $this->album_model->get_album_id_by_spotify_id($album_spotify_id);
+
+        if ($this->my_album_model->exist_my_album($register_album_id)) {
+            return;
+        }
+
+        $this->my_album_model->insert_my_album([
+            'album_id' => $register_album_id,
+        ]);
+
+        return;
     }
 }
