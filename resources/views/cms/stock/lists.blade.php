@@ -17,7 +17,15 @@
                             </div>
                             <div class="card-body">
                                 <div class="form-group">
-                                    <label for="album">検索キーワード</label>
+                                    <label for="album">タイプ</label>
+                                    <select name="type" class="form-control">
+                                        @foreach ($form['type'] as $key => $value)
+                                            <option value="{{ $key }}" @if( $params['type'] == $key ) selected="selected" @endif>{{ $value }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="album">キーワード</label>
                                     <input name="query" type="text" class="form-control" value="{{ $params['query'] }}">
                                 </div>
                             </div>
