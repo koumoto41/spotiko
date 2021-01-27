@@ -10,6 +10,7 @@ class StockController extends Controller
 {
     private $stock_presenter;
     const LIST_LIMIT = 20;
+    const SEARCH_TYPE_LIST = ['artist' => 'アーティスト', 'album' => 'アルバム'];
 
     public function __construct()
     {
@@ -24,8 +25,11 @@ class StockController extends Controller
         // パラメータ管理
         $data['params'] = $this->stock_presenter->make_params($request);
 
+        // 検索フォーム
+        $data['form']['type'] = self::SEARCH_TYPE_LIST;
+
         try {
-            $my_album = $this->stock_presenter->get_my_album_list($data['params']['query'], 'album', self::LIST_LIMIT, $offset);
+            $my_album = $this->stock_presenter->get_my_album_list($data['params']['query'], $data['params']['type'], self::LIST_LIMIT, $offset);
         } catch (\Exception $e) {
             return false;
         }

@@ -78,7 +78,8 @@ class StockPresenter
     public function make_params(Request $request)
     {
         return [
-            'query' =>  $request->input('query') ?? ''
+            'query' =>  $request->input('query') ?? '',
+            'type' =>  $request->input('type') ?? 'album'
         ];
     }
 
