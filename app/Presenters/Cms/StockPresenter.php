@@ -9,6 +9,7 @@ namespace App\Presenters\Cms;
 use App\Models;
 use App\Presenters;
 use App\Library\SpotifyApi;
+use Illuminate\Http\Request;
 
 class StockPresenter
 {
@@ -67,6 +68,18 @@ class StockPresenter
             ];
         }
         return $result;
+    }
+
+    /**
+     * My Album検索用のパラメータをまとめる
+     * @param $request
+     * @return array
+     */
+    public function make_params(Request $request)
+    {
+        return [
+            'query' =>  $request->input('query') ?? ''
+        ];
     }
 
     public function get_table_view($data, $type='top')
@@ -152,6 +165,7 @@ class StockPresenter
      * My Albumへの登録処理を行う
      * @param $artist_spotify_id
      * @param $album_spotify_id
+     * @return array
      */
     public function register_my_album($artist_spotify_id, $album_spotify_id)
     {

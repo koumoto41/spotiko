@@ -21,8 +21,11 @@ class StockController extends Controller
         $data['page'] = (int)$request->input('page') ? (int)$request->input('page') : 1;
         $offset = self::LIST_LIMIT * ($data['page'] - 1);
 
+        // パラメータ管理
+        $data['params'] = $this->stock_presenter->make_params($request);
+
         try {
-            $my_album = $this->stock_presenter->get_my_album_list('', 'album', self::LIST_LIMIT, $offset);
+            $my_album = $this->stock_presenter->get_my_album_list($data['params']['query'], 'album', self::LIST_LIMIT, $offset);
         } catch (\Exception $e) {
             return false;
         }
