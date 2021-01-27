@@ -125,8 +125,17 @@ class StockPresenter
         foreach ($data as $row_number => $item) {
 
             $register_badge = '';
+            $delete_button = view('cms.parts.button_js')->with([
+                'text' => '追加',
+                'type' => 'danger',
+                'extra' => 'data-album_id="'.e($item['album_spotify_id']).'" data-artist_id="'.e($item['artist_spotify_id']).'"',
+                'class' => 'btn-register'
+            ]);
+
             if ($item['is_register']) {
+                // データ登録済の場合は削除ボタン
                 $register_badge = view('cms.parts.badge')->with(['type' => 'danger', 'text' => '登録済'])  .'<br>';
+                $delete_button = '';
             }
 
             $this->table_presenter->set_td($row_number, [
@@ -134,12 +143,7 @@ class StockPresenter
                 $register_badge . e($item['album_name']),
                 e($item['artist_name']),
                 e($item['release_date']),
-                view('cms.parts.button_js')->with([
-                    'text' => '追加',
-                    'type' => 'danger',
-                    'extra' => 'data-album_id="'.e($item['album_spotify_id']).'" data-artist_id="'.e($item['artist_spotify_id']).'"',
-                    'class' => 'btn-register'
-                ])
+                $delete_button
             ]);
         }
     }
@@ -171,13 +175,13 @@ class StockPresenter
         $register_album_id = $this->album_model->get_album_id_by_spotify_id($album_spotify_id);
 
         if ($this->my_album_model->exist_my_album($register_album_id)) {
-            return;
+            return ['processing' => false, 'message' => 'すでに登録されています'];
         }
 
         $this->my_album_model->insert_my_album([
             'album_id' => $register_album_id,
         ]);
 
-        return;
+        return ['processing' => true, 'message' => '登録が完了しました'];
     }
 }

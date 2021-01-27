@@ -71,7 +71,7 @@
                     'X-CSRF-TOKEN': '<?= csrf_token() ?>'
                 },
                 success: function (data) {
-                    alert('登録しました');
+                    alert(data.message);
                 },
                 error: function (xhr, textStatus, errorThrown) {
                     alert('失敗しました');
