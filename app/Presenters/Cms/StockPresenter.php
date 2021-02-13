@@ -42,7 +42,7 @@ class StockPresenter
         return [
             'count' => $obj_my_album->count(),
             'list' => $obj_my_album->get()->toArray(),
-            'paginame' => $obj_my_album->paginate($limit)
+            'paginate' => $obj_my_album->paginate($limit)
         ];
     }
 
