@@ -36,7 +36,7 @@ class StockController extends Controller
 
         $data['count'] = $my_album['count'];
         $data['table_view'] = $this->stock_presenter->get_table_view($my_album['list']);
-        $data['paginame'] = $my_album['paginame'];
+        $data['paginate'] = $my_album['paginate'];
 
         return view('cms.stock.lists')->with($data);
     }
