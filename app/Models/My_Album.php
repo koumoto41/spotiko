@@ -58,7 +58,7 @@ class My_Album extends Model
             ->orderByRaw('artist.name, album.name');
 
         $my_album_query = $limit ? $my_album_query->limit($limit) : $my_album_query;
-        $my_album_query = $offset ? $my_album_query->limit($offset) : $my_album_query;
+        $my_album_query = $offset ? $my_album_query->offset($offset) : $my_album_query;
 
         if ($type == 'album') {
             $my_album_query = $my_album_query->where('album.name', 'like', "%{$query}%");

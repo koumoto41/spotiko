@@ -40,7 +40,7 @@ class StockPresenter
         $obj_my_album = $this->my_album_model->get_my_album($query, $type, $limit, $offset);
 
         return [
-            'count' => $this->my_album_model->get_my_album('', '', 0, 0)->count(),
+            'count' => $this->my_album_model->get_my_album($query, $type, 0, 0)->count(),
             'list' => $obj_my_album->get()->toArray(),
             'paginate' => $obj_my_album->paginate($limit)
         ];
