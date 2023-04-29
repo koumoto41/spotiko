@@ -1,0 +1,39 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./app/Dockerfile
+    volumes:
+      - ../../spotiko/:/app
+    container_name: spotiko_app
+
+  web:
+    build:
+      context: .
+      dockerfile: ./web/Dockerfile
+    ports:
+      - "1111:80"
+    depends_on:
+      - app
+    volumes:
+      - ../../spotiko/:/app
+    container_name: spotiko_web
+
+  mysql:
+    build:
+      context: .
+      dockerfile: ./mysql/Dockerfile
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: spotiko
+      MYSQL_USER: spotiko
+      MYSQL_PASSWORD: sa
+      MYSQL_ROOT_PASSWORD: sa
+      TZ: 'Asia/Tokyo'
+    volumes:
+      - ./mysql/data:/var/lib/mysql
+      - ./mysql/work:/docker-entrypoint-initdb.d/
+    container_name: spotiko_mysql
