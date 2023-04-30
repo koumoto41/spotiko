@@ -8,12 +8,12 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^7.4",
+        "php": "^8.0",
         "doctrine/dbal": "2.*",
         "fideloper/proxy": "^4.0",
         "jeroennoten/laravel-adminlte": "^3.5",
-        "jwilsson/spotify-web-api-php": "^3.0",
-        "laravel/framework": "7.*",
+        "jwilsson/spotify-web-api-php": "^5.6",
+        "laravel/framework": "8.*",
         "laravel/tinker": "^2.0",
         "linecorp/line-bot-sdk": "^4.2",
         "olssonm/l5-very-basic-auth": "6.*"
