@@ -60,6 +60,52 @@ final class SpotifyApi
         header('Location: ' . $this->spotifyApiSession->getAuthorizeUrl(['scope' => Config('spotify.scope')]));
         die();
     }
+
+    /**
+     * アクセストークンをrefreshして登録する
+     * @param int $userId
+     * @return void
+     */
+    public function refreshAccessToken(int $userId): void
+    {
+        // ここでDBからトークン取ってくる
+        $tokenData = $this->tokenRepositories->getTokenByUserId($userId);
+        $oldAccessToken = $tokenData->refresh_token;
+
+        // トークンをリフレッシュして取得する
+        $this->spotifyApiSession->refreshAccessToken($oldAccessToken);
+
+        // トークン登録
+        $this->saveAccessToken($userId);
+    }
+
+    /**
+     * トークンをセットする
+     * @param int $userId
+     * @return void
+     */
+    private function setAccessToken(int $userId): void
+    {
+        $this->refreshAccessToken($userId);
+
+        $tokenData = $this->tokenRepositories->getTokenByUserId($userId);
+        $this->spotifyWebApi->setAccessToken($tokenData->token);
+    }
+
+    /**
+     * @param int $userId
+     * @param int $limit
+     * @param int $offset
+     * @return array
+     */
+    public function getFeaturePlaylist(int $userId, int $limit = 20, int $offset = 0): array
+    {
+        $this->setAccessToken($userId);
+        return $this->spotifyWebApi->getFeaturedPlaylists([
+            'limit' => $limit,
+            'offset' => $offset,
+        ]);
+    }
 }
 
 

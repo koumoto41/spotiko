@@ -11,15 +11,18 @@
 |
 */
 
-Route::group(['middleware' => 'auth.very_basic'], function() {
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DisplayController;
+
+Route::group(['middleware' => 'auth.very_basic'], function () {
     Route::get('/token', 'TokenController@get_token');
     Route::get('/aggregate/artist', 'AggregateController@aggregate_artist');
     Route::get('/aggregate/track', 'AggregateController@aggregate_track');
-    Route::get('/', 'DisplayController@page_top');
+    Route::get('/', [DisplayController::class, 'getIndex']);
 
     Route::get('/cms/stock', 'Cms\StockController@top');
     Route::get('/cms/stock/form', 'Cms\StockController@form');
     Route::post('/ajax/register/my_album', 'Cms\StockController@register');
 });
 
-Route::get('/line', 'DisplayController@line_test');
+Route::get('/line', [DisplayController::class, 'lineTest']);

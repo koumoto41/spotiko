@@ -23,7 +23,7 @@ Route::group(['namespace' => 'Api'], function () {
     Route::post('/webhook', 'LineWebhookController@webhook')->name('line.webhook');
 });
 
-Route::prefix('api/v1')->group(function () {
-    Route::post('/token', SpotifyTokenController::class, 'getAccessToken');
-    Route::post('/authorize', SpotifyTokenController::class, 'requestAuthorizationCode');
-});
+//Route::prefix('api/v1')->group(function () {
+//    Route::post('/token', SpotifyTokenController::class, 'getAccessToken');
+//    Route::post('/authorize', SpotifyTokenController::class, 'requestAuthorizationCode');
+//});
