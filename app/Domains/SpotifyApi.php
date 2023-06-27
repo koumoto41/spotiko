@@ -6,6 +6,7 @@ use App\Repositories\TokenRepositories;
 use JetBrains\PhpStorm\NoReturn;
 use SpotifyWebAPI\Session;
 use SpotifyWebAPI\SpotifyWebAPI;
+use Exception;
 
 final class SpotifyApi
 {
@@ -80,6 +81,25 @@ final class SpotifyApi
     }
 
     /**
+     * @param Exception $exception
+     * @param int $userId
+     * @return bool
+     */
+    public function checkRefreshToken(Exception $exception, int $userId): bool
+    {
+        $message = $exception->getMessage();
+        $code = $exception->getCode();
+
+        // tokenの期限切れなのでリフレッシュする
+        if ($code === 401 && $message === 'The access token expired') {
+            $this->refreshAccessToken($userId);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
      * トークンをセットする
      * @param int $userId
      * @return void
@@ -106,9 +126,28 @@ final class SpotifyApi
             'offset' => $offset,
         ]);
     }
+
+    /**
+     * @param int $userId
+     * @param string $type
+     * @param int $limit
+     * @param int $offset
+     * @param string $time_range
+     * @return array
+     */
+    public function getMyTop(
+        int $userId,
+        string $type,
+        int $limit = 100,
+        int $offset = 0,
+        string $time_range = 'short_term'
+    ): array {
+        $this->setAccessToken($userId);
+
+        return $this->api->getMyTop($type, [
+            'limit' => $limit,
+            'offset' => $offset,
+            'time_range' => $time_range
+        ]);
+    }
 }
-
-
-
-
-

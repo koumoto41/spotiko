@@ -41,4 +41,45 @@ final class TopArtistRepositories
         $topArtist = $isRand ? $topArtist->inRandomOrder() : $topArtist->latest('target_date');
         return $topArtist->get();
     }
+
+    /**
+     * 該当の日付のデータがあるか調べる
+     * @param $targetDate
+     * @return bool
+     */
+    public function existTargetDateData($targetDate): bool
+    {
+        return (bool)$this->topArtistModel->where('target_date', $targetDate)->first();
+    }
+
+    /**
+     * 該当の日付のデータを削除
+     * @param $targetDate
+     * @return void
+     */
+    public function deleteTopArtistByTargetDate($targetDate): void
+    {
+        $this->topArtistModel->where('target_date', $targetDate)->delete();
+    }
+
+    /**
+     * Artist Top Rate登録
+     * @param $targetDate
+     * @param $artistId
+     * @param $popularity
+     * @param $point
+     * @return void
+     */
+    public function insertTopArtist($targetDate, $artistId, $popularity, $point): void
+    {
+        $upd_data = [
+            'target_date' => $targetDate,
+            'artist_id' => $artistId,
+            'popularity' => $popularity,
+            'point' => $point,
+        ];
+
+        $this->topArtistModel->fill($upd_data);
+        $this->topArtistModel->save();
+    }
 }
