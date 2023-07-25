@@ -2,7 +2,7 @@
 
 namespace App\UseCases;
 
-use App\Domains\SpotifyApi;
+use App\Services\SpotifyApi;
 use SpotifyWebAPI\Session;
 
 final class GetSpotifyAccessToken

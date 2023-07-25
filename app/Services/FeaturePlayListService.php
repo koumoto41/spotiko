@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Domains;
+namespace App\Services;
 
-use App\Domains\SpotifyApi;
+use App\Services\SpotifyApiService;
 
-final class FeaturePlayList
+final class FeaturePlayListService
 {
-    public function __construct(private SpotifyApi $spotifyApi)
+    public function __construct(private SpotifyApiService $spotifyApi)
     {
     }
 

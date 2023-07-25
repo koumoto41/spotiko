@@ -2,10 +2,10 @@
 
 namespace App\UseCases\Aggregate;
 
-use App\Domains\SpotifyApi;
-use App\Domains\Aggregate;
-use App\Repositories\ArtistRepositories;
 use App\Repositories\ArtistGenreRepositories;
+use App\Repositories\ArtistRepositories;
+use App\Services\Aggregate;
+use App\Services\SpotifyApi;
 use Exception;
 
 final class Artist

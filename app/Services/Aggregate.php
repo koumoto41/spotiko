@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Domains;
+namespace App\Services;
 
-use App\Domains\SpotifyApi;
-use App\Repositories\ArtistRepositories;
-use App\Repositories\ArtistGenreRepositories;
 use App\Repositories\ArtistGenreMapRepositories;
+use App\Repositories\ArtistGenreRepositories;
+use App\Repositories\ArtistRepositories;
 use App\Repositories\TopArtistRepositories;
 
 final class Aggregate

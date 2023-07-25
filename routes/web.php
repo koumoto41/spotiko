@@ -13,6 +13,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DisplayController;
+use App\Http\Controllers\Cms\TopController;
 
 Route::group(['middleware' => 'auth.very_basic'], function () {
     Route::get('/token', 'TokenController@get_token');
@@ -20,6 +21,7 @@ Route::group(['middleware' => 'auth.very_basic'], function () {
     Route::get('/aggregate/track', 'AggregateController@aggregate_track');
     Route::get('/', [DisplayController::class, 'getIndex']);
 
+    Route::get('/cms', [TopController::class, 'getIndex']);
     Route::get('/cms/stock', 'Cms\StockController@top');
     Route::get('/cms/stock/form', 'Cms\StockController@form');
     Route::post('/ajax/register/my_album', 'Cms\StockController@register');

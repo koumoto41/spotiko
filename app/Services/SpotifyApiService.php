@@ -1,14 +1,14 @@
 <?php
 
-namespace App\Domains;
+namespace App\Services;
 
 use App\Repositories\TokenRepositories;
+use Exception;
 use JetBrains\PhpStorm\NoReturn;
 use SpotifyWebAPI\Session;
 use SpotifyWebAPI\SpotifyWebAPI;
-use Exception;
 
-final class SpotifyApi
+final class SpotifyApiService
 {
     public function __construct(
         private TokenRepositories $tokenRepositories,

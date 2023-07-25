@@ -2,18 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\UseCases\Top\GetList;
-use App\UseCases\Line\LineTest;
+use App\Services\FeaturePlayListService;
 
 class DisplayController extends Controller
 {
-    public function getIndex(GetList $getList): string
+    public function lineTest(FeaturePlayListService $featurePlayList): void
     {
-        return view('top', $getList());
-    }
-
-    public function lineTest(LineTest $lineTest): void
-    {
-        var_dump($lineTest());
+        var_dump($featurePlayList->createFeaturePlaylistContent(1));
     }
 }
