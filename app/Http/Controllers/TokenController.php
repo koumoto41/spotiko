@@ -2,37 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Library\SpotifyApi;
+use App\Services\SpotifyApiService;
 use Exception;
 
-/**
- * Class TokenController
- * @package App\Http\Controllers
- * @property SpotifyApi $spotify_api_library
- */
+
 class TokenController extends Controller
 {
+    private const USER_ID = 1;
 
-    protected $spotify_api_library;
-    const USER_ID = 1;
-
-    public function __construct(SpotifyApi $spotify_api_library)
+    public function __construct(private SpotifyApiService $spotifyApiService)
     {
-        $this->spotify_api_library = $spotify_api_library;
     }
 
-    /**
-     *
-     */
-    public function get_token()
+    public function getToken()
     {
-        if (isset($_GET['code'])) {
-            # トークンを取得する
-            try {
-                $this->spotify_api_library->get_access_token($_GET['code'], self::USER_ID);
-            } catch (Exception $e) {
+        $code = request('code');
 
+        if ($code) {
+            // トークンを取得する
+            try {
+                $this->spotifyApiService->getAccessToken(
+                    $code,
+                    self::USER_ID
+                );
+            } catch (Exception $e) {
                 $message = $e->getMessage();
                 $code = $e->getCode();
 
@@ -41,8 +34,8 @@ class TokenController extends Controller
                 return;
             }
         } else {
-            # トークンを要求する
-            $this->spotify_api_library->set_auth();
+            // トークンを要求する
+            $this->spotifyApiService->accessAuthorizeUrl();
         }
     }
 }

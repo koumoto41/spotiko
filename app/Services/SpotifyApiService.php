@@ -59,8 +59,23 @@ final class SpotifyApiService
     #[NoReturn] public function accessAuthorizeUrl(): void
     {
         # scopeを設定し、承認URLへアクセス
-        header('Location: ' . $this->spotifyApiSession->getAuthorizeUrl(['scope' => Config('spotify.scope')]));
+        header('Location: ' . $this->session->getAuthorizeUrl(['scope' => Config('spotify.scope')]));
         die();
+    }
+
+    /**
+     * アクセストークンを取得し、DBに登録する
+     * @param string $code
+     * @param int $userId
+     * @return void
+     */
+    public function getAccessToken(string $code, int $userId): void
+    {
+        // 承認コード使ってトークンをリクエスト
+        $this->session->requestAccessToken($code);
+
+        // トークン登録
+        $this->saveAccessToken($userId);
     }
 
     /**
