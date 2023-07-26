@@ -5,15 +5,15 @@ namespace App\Services;
 use App\Repositories\TokenRepositories;
 use Exception;
 use JetBrains\PhpStorm\NoReturn;
-use SpotifyWebAPI\Session;
-use SpotifyWebAPI\SpotifyWebAPI;
+use SpotifyWebAPI;
 
 final class SpotifyApiService
 {
+    private $session;
+
     public function __construct(
         private TokenRepositories $tokenRepositories,
-        private Session $spotifyApiSession,
-        private SpotifyWebAPI $spotifyWebApi
+        private SpotifyWebAPI\SpotifyWebAPI $spotifyWebApi
     ) {
         $this->init();
     }
@@ -25,7 +25,7 @@ final class SpotifyApiService
     private function init(): void
     {
         // セッションオブジェクトを作成
-        $this->spotifyApiSession = new Session(
+        $this->session = new SpotifyWebAPI\Session(
             Config('spotify.CLIENT_ID'),
             Config('spotify.CLIENT_SECRET'),
             Config('spotify.REDIRECT_URI')
@@ -46,8 +46,8 @@ final class SpotifyApiService
         // tokenを登録
         $this->tokenRepositories->insertToken(
             $userId,
-            $this->spotifyApiSession->getAccessToken(),
-            $this->spotifyApiSession->getRefreshToken()
+            $this->session->getAccessToken(),
+            $this->session->getRefreshToken()
         );
     }
 
@@ -74,7 +74,7 @@ final class SpotifyApiService
         $oldAccessToken = $tokenData->refresh_token;
 
         // トークンをリフレッシュして取得する
-        $this->spotifyApiSession->refreshAccessToken($oldAccessToken);
+        $this->session->refreshAccessToken($oldAccessToken);
 
         // トークン登録
         $this->saveAccessToken($userId);
@@ -149,5 +149,27 @@ final class SpotifyApiService
             'offset' => $offset,
             'time_range' => $time_range
         ]);
+    }
+
+    /**
+     * @param int $userId
+     * @param int $artistId
+     * @return object
+     */
+    public function getArtistById(int $userId, int $artistId)
+    {
+        $this->setAccessToken($userId);
+        return $this->spotifyWebApi->getArtist($artistId);
+    }
+
+    /**
+     * @param int $userId
+     * @param int $albumId
+     * @return object
+     */
+    public function getAlbumById(int $userId, int $albumId)
+    {
+        $this->setAccessToken($userId);
+        return $this->spotifyWebApi->getAlbum($albumId);
     }
 }

@@ -40,7 +40,7 @@
                         </div>
                         {!! $table_view !!}
                         <div class="card-footer clearfix">
-                            {{ $paginate->appends(request()->query())->links('vendor/pagination/pagination_view') }}
+                            {!! $paginate !!}
                         </div>
                     </div>
                 </div>

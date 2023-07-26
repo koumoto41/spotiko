@@ -4,39 +4,37 @@ namespace App\Http\Controllers\Cms;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Presenters;
+use App\Services\Cms\StockService;
 
 class StockController extends Controller
 {
-    private $stock_presenter;
-    const LIST_LIMIT = 20;
-    const SEARCH_TYPE_LIST = ['artist' => 'アーティスト', 'album' => 'アルバム'];
+    private const LIST_LIMIT = 20;
+    private const SEARCH_TYPE_LIST = ['artist' => 'アーティスト', 'album' => 'アルバム'];
 
-    public function __construct()
+    public function __construct(private StockService $stockService)
     {
-        $this->stock_presenter = new Presenters\Cms\StockPresenter();
     }
 
-    public function top(Request $request)
+    public function getIndex()
     {
-        $data['page'] = (int)$request->input('page') ? (int)$request->input('page') : 1;
-        $offset = self::LIST_LIMIT * ($data['page'] - 1);
-
-        // パラメータ管理
-        $data['params'] = $this->stock_presenter->make_params($request);
+        $page = request('page', '1');
+        $offset = self::LIST_LIMIT * ($page - 1);
+        $query = request('query', '');
+        $type = request('type', 'album');
+        $data['params'] = ['type' => $type, 'query' => $query];
 
         // 検索フォーム
         $data['form']['type'] = self::SEARCH_TYPE_LIST;
 
         try {
-            $my_album = $this->stock_presenter->get_my_album_list($data['params']['query'], $data['params']['type'], self::LIST_LIMIT, $offset);
+            $myAlbum = $this->stockService->getMyAlbumList($query, $type, self::LIST_LIMIT, $offset);
         } catch (\Exception $e) {
             return false;
         }
 
-        $data['count'] = $my_album['count'];
-        $data['table_view'] = $this->stock_presenter->get_table_view($my_album['list']);
-        $data['paginate'] = $my_album['paginate'];
+        $data['count'] = $myAlbum['count'];
+        $data['table_view'] = $this->stockService->getTableView($myAlbum['list']);
+        $data['paginate'] = $myAlbum['paginate'];
 
         return view('cms.stock.lists')->with($data);
     }

@@ -12,6 +12,15 @@ final class ArtistRepositories
     }
 
     /**
+     * @param int $spotifyId
+     * @return bool
+     */
+    public function existArtist(int $spotifyId): bool
+    {
+        return $this->artistModel->where('spotify_id', $spotifyId)->exists();
+    }
+
+    /**
      * spotifyIdからArtistIdを検索して返す
      * @param $spotifyId
      * @return int|null
