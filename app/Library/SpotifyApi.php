@@ -205,29 +205,6 @@ class SpotifyApi
 
         return $this->api->getFeaturedPlaylists($option);
     }
-
-    /**
-     * 検索
-     * @param $user_id
-     * @param string $query
-     * @param string $type album, artist, playlist, track, show, episode
-     * @param int $limit
-     * @param int $offset
-     * @return array|object
-     */
-    public function search_item($user_id, $query, $type, $limit = self::SEARCH_LIMIT, $offset = 0)
-    {
-        $this->set_access_token($user_id);
-
-        $params = [
-            'limit' => $limit,
-            'offset' => $offset
-        ];
-
-        return $this->api->search($query, $type, $params);
-
-    }
-
 }
 
 

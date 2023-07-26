@@ -39,30 +39,30 @@ class StockController extends Controller
         return view('cms.stock.lists')->with($data);
     }
 
-    public function form(Request $request)
+    public function getForm()
     {
-        $data['page'] = $request->input('page') ?? 1;
-        $data['query'] = $request->input('query');
+        $data['page'] = request('page', 1);
+        $data['query'] = request('query');
         $offset = self::LIST_LIMIT * ($data['page'] - 1);
 
         $result = [];
         if ($data['query']) {
-            $result = $this->stock_presenter->search_album_from_spotify($data['query'], self::LIST_LIMIT, $offset);
+            $result = $this->stockService->searchAlbumFromSpotify($data['query'], self::LIST_LIMIT, $offset);
         }
 
         $data['count'] = count($result);
-        $data['table_view'] = $this->stock_presenter->get_table_view($result, 'spotify');
+        $data['table_view'] = $this->stockService->getTableView($result, 'spotify');
 
         return view('cms.stock.form')->with($data);
     }
 
-    public function register(Request $request)
+    public function postRegister()
     {
-        $artist_id = $request->input('artist_id');
-        $album_id = $request->input('album_id');
+        $artistId = request('artist_id');
+        $albumId = request('album_id');
 
         try {
-            $result= $this->stock_presenter->register_my_album($artist_id, $album_id);
+            $result = $this->stockService->registerMyAlbum($artistId, $albumId);
         } catch (\Exception $e) {
             return response(json_encode(['message' => $e->getMessage()]), 400)
                 ->header('Content-Type', 'application/json');

@@ -48,13 +48,23 @@ class StockService
         ];
     }
 
-    public function searchAlbumFromSpotify(string $query, int $limit, int $offset)
+    /**
+     * @param string $query
+     * @param int $limit
+     * @param int $offset
+     * @return array
+     */
+    public function searchAlbumFromSpotify(string $query, int $limit, int $offset): array
     {
-        $albums = $this->spotify_api_library->search_item(1, $query, 'album', $limit, $offset);
-        return $this->parse_spotify_album_data($albums);
+        $albums = $this->spotifyApiService->searchItem(1, $query, 'album', $limit, $offset);
+        return $this->parseSpotifyAlbumData($albums);
     }
 
-    private function parse_spotify_album_data($obj)
+    /**
+     * @param object $obj
+     * @return array
+     */
+    private function parseSpotifyAlbumData(object $obj): array
     {
         $result = [];
         foreach ($obj->albums->items as $item) {
@@ -66,7 +76,7 @@ class StockService
                 'artist_name' => $item->artists[0]->name,
                 'artist_spotify_id' => $item->artists[0]->id,
                 'image' => $item->images[0]->url ?? '',
-                'is_register' => $this->my_album_model->exist_my_album_by_spotify_id($item->id)
+                'is_register' => $this->myAlbumRepository->existMyAlbumBySpotifyId($item->id)
             ];
         }
         return $result;

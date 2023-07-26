@@ -10,6 +10,7 @@ use SpotifyWebAPI;
 final class SpotifyApiService
 {
     private $session;
+    private const SEARCH_LIMIT = 20;
 
     public function __construct(
         private TokenRepositories $tokenRepositories,
@@ -171,5 +172,31 @@ final class SpotifyApiService
     {
         $this->setAccessToken($userId);
         return $this->spotifyWebApi->getAlbum($albumId);
+    }
+
+    /**
+     * 検索
+     * @param int $userId
+     * @param string $query
+     * @param string $type
+     * @param int $limit
+     * @param int $offset
+     * @return object
+     */
+    public function searchItem(
+        int $userId,
+        string $query,
+        string $type,
+        int $limit = self::SEARCH_LIMIT,
+        int $offset = 0
+    ): object {
+        $this->setAccessToken($userId);
+
+        $params = [
+            'limit' => $limit,
+            'offset' => $offset
+        ];
+
+        return $this->spotifyWebApi->search($query, $type, $params);
     }
 }

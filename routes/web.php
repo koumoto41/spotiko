@@ -24,8 +24,8 @@ Route::group(['middleware' => 'auth.very_basic'], function () {
 
     Route::get('/cms', [TopController::class, 'getIndex']);
     Route::get('/cms/stock', [StockController::class, 'getIndex']);
-    Route::get('/cms/stock/form', 'Cms\StockController@form');
-    Route::post('/ajax/register/my_album', 'Cms\StockController@register');
+    Route::get('/cms/stock/form', [StockController::class, 'getForm']);
+    Route::post('/ajax/register/my_album', [StockController::class, 'postRegister']);
 });
 
 Route::get('/line', [DisplayController::class, 'lineTest']);
