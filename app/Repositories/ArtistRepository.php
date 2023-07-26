@@ -5,7 +5,7 @@ namespace App\Repositories;
 use App\Models\Artist;
 use Illuminate\Support\Collection;
 
-final class ArtistRepositories
+final class ArtistRepository
 {
     public function __construct(private Artist $artistModel)
     {

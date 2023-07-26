@@ -4,7 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Token;
 
-final class TokenRepositories
+final class TokenRepository
 {
     public function __construct(private Token $tokenModel)
     {

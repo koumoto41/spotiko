@@ -5,7 +5,7 @@ namespace App\Repositories;
 use App\Models\Album;
 use Illuminate\Support\Collection;
 
-final class AlbumRepositories
+final class AlbumRepository
 {
     public function __construct(private Album $albumModel)
     {

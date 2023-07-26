@@ -5,7 +5,7 @@ namespace App\Repositories;
 use App\Models\Artist_Genre_Map;
 use Illuminate\Support\Collection;
 
-final class ArtistGenreMapRepositories
+final class ArtistGenreMapRepository
 {
     public function __construct(
         private Artist_Genre_Map $artistGenreMapModel

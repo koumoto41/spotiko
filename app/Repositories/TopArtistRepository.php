@@ -5,7 +5,7 @@ namespace App\Repositories;
 use App\Models\Top_Artist;
 use \Illuminate\Support\Collection;
 
-final class TopArtistRepositories
+final class TopArtistRepository
 {
     public function __construct(private Top_Artist $topArtistModel)
     {

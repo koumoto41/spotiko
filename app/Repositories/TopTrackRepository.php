@@ -5,7 +5,7 @@ namespace App\Repositories;
 use App\Models\Top_Track;
 use Illuminate\Support\Collection;
 
-final class TopTrackRepositories
+final class TopTrackRepository
 {
     public function __construct(private Top_Track $topTrackModel)
     {

@@ -2,12 +2,12 @@
 
 namespace App\Services;
 
-use App\Repositories\ArtistGenreMapRepositories;
-use App\Repositories\ArtistGenreRepositories;
-use App\Repositories\ArtistRepositories;
-use App\Repositories\TopArtistRepositories;
+use App\Repositories\ArtistGenreMapRepository;
+use App\Repositories\ArtistGenreRepository;
+use App\Repositories\ArtistRepository;
+use App\Repositories\TopArtistRepository;
 
-final class Aggregate
+final class AggregateService
 {
     // 登録許可画像サイズ
     public const ALLOWED_IMAGE_WIDTH = ['640', '320', '160'];
@@ -15,10 +15,10 @@ final class Aggregate
 
     public function __construct(
         private SpotifyApi $spotifyApi,
-        private ArtistRepositories $artistRepositories,
-        private ArtistGenreRepositories $artistGenreRepositories,
-        private ArtistGenreMapRepositories $artistGenreMapRepositories,
-        private TopArtistRepositories $topArtistRepositories
+        private ArtistRepository $artistRepositories,
+        private ArtistGenreRepository $artistGenreRepositories,
+        private ArtistGenreMapRepository $artistGenreMapRepositories,
+        private TopArtistRepository $topArtistRepositories
     ) {
     }
 

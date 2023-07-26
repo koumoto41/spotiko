@@ -3,14 +3,14 @@
 namespace App\Http\Controllers\Cms;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\TopArtistRepositories;
-use App\Repositories\TopTrackRepositories;
+use App\Repositories\TopArtistRepository;
+use App\Repositories\TopTrackRepository;
 
 class TopController extends Controller
 {
     public function getIndex(
-        TopArtistRepositories $topArtistRepositories,
-        TopTrackRepositories $topTrackRepositories
+        TopArtistRepository $topArtistRepositories,
+        TopTrackRepository $topTrackRepositories
     ): string {
         $displayArtistDate = $topArtistRepositories->getAggregateDate(true);
         $displayTrackDate = $topTrackRepositories->getAggregateDate(true);

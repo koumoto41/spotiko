@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Repositories\TokenRepositories;
+use App\Repositories\TokenRepository;
 use Exception;
 use JetBrains\PhpStorm\NoReturn;
 use SpotifyWebAPI;
@@ -13,7 +13,7 @@ final class SpotifyApiService
     private const SEARCH_LIMIT = 20;
 
     public function __construct(
-        private TokenRepositories $tokenRepositories,
+        private TokenRepository $tokenRepositories,
         private SpotifyWebAPI\SpotifyWebAPI $spotifyWebApi
     ) {
         $this->init();

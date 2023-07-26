@@ -2,9 +2,9 @@
 
 namespace App\UseCases\Aggregate;
 
-use App\Repositories\ArtistGenreRepositories;
-use App\Repositories\ArtistRepositories;
-use App\Services\Aggregate;
+use App\Repositories\ArtistGenreRepository;
+use App\Repositories\ArtistRepository;
+use App\Services\AggregateService;
 use App\Services\SpotifyApi;
 use Exception;
 
@@ -12,9 +12,9 @@ final class Artist
 {
     public function __construct(
         private SpotifyApi $spotifyApi,
-        private Aggregate $aggregateDomain,
-        private ArtistRepositories $artistRepositories,
-        private ArtistGenreRepositories $artistGenreRepositories
+        private AggregateService $aggregateDomain,
+        private ArtistRepository $artistRepositories,
+        private ArtistGenreRepository $artistGenreRepositories
     ) {
     }
 

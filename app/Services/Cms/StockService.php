@@ -9,10 +9,10 @@ namespace App\Services\Cms;
 use App\Services\SpotifyApiService;
 use App\Services\TableService;
 use App\Repositories\MyAlbumRepository;
-use App\Repositories\AlbumRepositories;
-use App\Repositories\ArtistRepositories;
-use App\Repositories\ArtistGenreRepositories;
-use App\Repositories\ArtistGenreMapRepositories;
+use App\Repositories\AlbumRepository;
+use App\Repositories\ArtistRepository;
+use App\Repositories\ArtistGenreRepository;
+use App\Repositories\ArtistGenreMapRepository;
 use Illuminate\Http\Request;
 use PHP_CodeSniffer\Tests\Core\File\testFECNNonExtendedClass;
 
@@ -25,10 +25,10 @@ class StockService
         private SpotifyApiService $spotifyApiService,
         private TableService $tableService,
         private MyAlbumRepository $myAlbumRepository,
-        private AlbumRepositories $albumRepositories,
-        private ArtistRepositories $artistRepositories,
-        private ArtistGenreRepositories $artistGenreRepositories,
-        private ArtistGenreMapRepositories $artistGenreMapRepositories
+        private AlbumRepository $albumRepositories,
+        private ArtistRepository $artistRepositories,
+        private ArtistGenreRepository $artistGenreRepositories,
+        private ArtistGenreMapRepository $artistGenreMapRepositories
     ) {
     }
 
