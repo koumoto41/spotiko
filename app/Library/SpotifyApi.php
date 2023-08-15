@@ -30,37 +30,6 @@ class SpotifyApi
         $this->token_model = new Token();
     }
 
-
-    /**
-     * Spotifyに承認コードを要求する
-     */
-    public function set_auth()
-    {
-        # scopeを設定
-        $options = ['scope' => Config('spotify.scope')];
-        header('Location: ' . $this->session->getAuthorizeUrl($options));
-        die();
-    }
-
-    /**
-     * アクセストークンを取得し、DBに登録する
-     * @param string $code 承認コード
-     * @param $user_id
-     */
-    public function get_access_token($code, $user_id)
-    {
-        // 承認コード使ってトークンをリクエスト
-        $this->session->requestAccessToken($code);
-
-        // アクセストークンを取得する
-        $access_token = $this->session->getAccessToken();
-        $refresh_token = $this->session->getRefreshToken();
-
-        // トークン登録
-        $this->save_access_token($user_id, $access_token, $refresh_token);
-
-    }
-
     /**
      * アクセストークンをrefreshして登録する
      * @param $user_id

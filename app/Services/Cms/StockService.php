@@ -13,8 +13,6 @@ use App\Repositories\AlbumRepository;
 use App\Repositories\ArtistRepository;
 use App\Repositories\ArtistGenreRepository;
 use App\Repositories\ArtistGenreMapRepository;
-use Illuminate\Http\Request;
-use PHP_CodeSniffer\Tests\Core\File\testFECNNonExtendedClass;
 
 class StockService
 {
@@ -25,10 +23,10 @@ class StockService
         private SpotifyApiService $spotifyApiService,
         private TableService $tableService,
         private MyAlbumRepository $myAlbumRepository,
-        private AlbumRepository $albumRepositories,
-        private ArtistRepository $artistRepositories,
-        private ArtistGenreRepository $artistGenreRepositories,
-        private ArtistGenreMapRepository $artistGenreMapRepositories
+        private AlbumRepository $albumRepository,
+        private ArtistRepository $artistRepository,
+        private ArtistGenreRepository $artistGenreRepository,
+        private ArtistGenreMapRepository $artistGenreMapRepository
     ) {
     }
 
@@ -183,24 +181,24 @@ class StockService
      */
     public function registerMyAlbum(int $artistSpotifyId, int $albumSpotifyId): array
     {
-        if (!$this->artistRepositories->existArtist($artistSpotifyId)) {
+        if (!$this->artistRepository->existArtist($artistSpotifyId)) {
             // アーティスト情報の登録が無ければ追加する
             $artist = $this->spotifyApiService->getArtistById(1, $artistSpotifyId);
             $artistArray = $this->makeArtistArray($artist);
             $genreArray = $this->putArtistGenreArray($artistArray);
-            $this->artistRepositories->upsertArtist($artistArray);
-            $this->artistGenreRepositories->upsertGenre($genreArray);
+            $this->artistRepository->upsertArtist($artistArray);
+            $this->artistGenreRepository->upsertGenre($genreArray);
             $this->registerArtistGenreMap($artistArray);
         }
-        $registerArtistId = $this->artistRepositories->getArtistIdBySpotifyId($artistSpotifyId);
+        $registerArtistId = $this->artistRepository->getArtistIdBySpotifyId($artistSpotifyId);
 
-        if (!$this->albumRepositories->existAlbum($albumSpotifyId)) {
+        if (!$this->albumRepository->existAlbum($albumSpotifyId)) {
             // アルバム情報の登録が無ければ追加する
             $album = $this->spotifyApiService->getAlbumById(1, $albumSpotifyId);
             $albumArray = $this->makeAlbumArray($album, $registerArtistId);
-            $this->albumRepositories->insertAlbum($albumArray);
+            $this->albumRepository->insertAlbum($albumArray);
         }
-        $registerAlbumId = $this->albumRepositories->getAlbumIdBySpotifyId($albumSpotifyId);
+        $registerAlbumId = $this->albumRepository->getAlbumIdBySpotifyId($albumSpotifyId);
 
         if ($this->myAlbumRepository->existMyAlbum($registerAlbumId)) {
             return ['processing' => false, 'message' => 'すでに登録されています'];
@@ -289,15 +287,15 @@ class StockService
             $artist = $row['artist'];
             $genreArray = $row['genre'];
 
-            $artist_id = $this->artistRepositories->getArtistIdBySpotifyId($artist['spotify_id']);
+            $artist_id = $this->artistRepository->getArtistIdBySpotifyId($artist['spotify_id']);
             if (!$artist_id) {
                 continue;
             }
 
             foreach ($genreArray as $genre) {
-                $this->artistGenreMapRepositories->firstOrCreateArtistGenreMap(
+                $this->artistGenreMapRepository->firstOrCreateArtistGenreMap(
                     $artist_id,
-                    $this->artistGenreRepositories->getGenreIdByGenreName($genre)
+                    $this->artistGenreRepository->getGenreIdByGenreName($genre)
                 );
             }
         }

@@ -14,11 +14,10 @@ final class AggregateService
     public const RANKING_POINT = 50;
 
     public function __construct(
-        private SpotifyApi $spotifyApi,
-        private ArtistRepository $artistRepositories,
-        private ArtistGenreRepository $artistGenreRepositories,
-        private ArtistGenreMapRepository $artistGenreMapRepositories,
-        private TopArtistRepository $topArtistRepositories
+        private ArtistRepository $artistRepository,
+        private ArtistGenreRepository $artistGenreRepository,
+        private ArtistGenreMapRepository $artistGenreMapRepository,
+        private TopArtistRepository $topArtistRepository
     ) {
     }
 
@@ -97,18 +96,18 @@ final class AggregateService
 
             $artist = $row['artist'];
             $genreArray = $row['genre'];
-            $artistId = $this->artistRepositories->getArtistIdBySpotifyId($artist['spotify_id']);
+            $artistId = $this->artistRepository->getArtistIdBySpotifyId($artist['spotify_id']);
 
             if (is_null($artistId)) {
                 continue;
             }
 
             foreach ($genreArray as $genreName) {
-                $genreId = $this->artistGenreRepositories->getGenreIdByGenreName($genreName);
+                $genreId = $this->artistGenreRepository->getGenreIdByGenreName($genreName);
                 if (is_null($genreId)) {
                     continue;
                 }
-                $this->artistGenreMapRepositories->firstOrCreateArtistGenreMap($artistId, $genreId);
+                $this->artistGenreMapRepository->firstOrCreateArtistGenreMap($artistId, $genreId);
             }
         }
     }
@@ -123,13 +122,13 @@ final class AggregateService
         $targetDate = date('Y-m-d');
 
         // 同じ日付のデータがあったら削除する
-        if ($this->topArtistRepositories->existTargetDateData($targetDate)) {
-            $this->topArtistRepositories->deleteTopArtistByTargetDate($targetDate);
+        if ($this->topArtistRepository->existTargetDateData($targetDate)) {
+            $this->topArtistRepository->deleteTopArtistByTargetDate($targetDate);
         }
 
         foreach ($artistArray as $key => $row) {
             // Artist取得
-            $artist = $this->artistRepositories->getArtistIdBySpotifyId($row['artist']['spotify_id']);
+            $artist = $this->artistRepository->getArtistIdBySpotifyId($row['artist']['spotify_id']);
 
             if (is_null($artist)) {
                 continue;
@@ -139,7 +138,7 @@ final class AggregateService
             $popularity = $artist->popularity;
             $point = self::RANKING_POINT - (int)$key;
 
-            $this->topArtistRepositories->insertTopArtist($targetDate, $artistId, $popularity, $point);
+            $this->topArtistRepository->insertTopArtist($targetDate, $artistId, $popularity, $point);
         }
     }
 }
