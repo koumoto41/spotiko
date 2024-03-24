@@ -13,9 +13,9 @@ final class TokenRepository
     /**
      * $userIdで絞り込んだToken情報を取得
      * @param int $userId
-     * @return Token
+     * @return Token|null
      */
-    public function getTokenByUserId(int $userId): Token
+    public function getTokenByUserId(int $userId): Token|null
     {
         return $this->tokenModel->where('user_id', $userId)->first();
     }
