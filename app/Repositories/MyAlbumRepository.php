@@ -27,7 +27,7 @@ final class MyAlbumRepository
     public function existMyAlbumBySpotifyId(int $spotifyId): bool
     {
         return $this->myAlbumModel
-            ->Join('album', 'my_album.album_id', '=', 'album.id')
+            ->join('album', 'my_album.album_id', '=', 'album.id')
             ->where('album.spotify_id', $spotifyId)
             ->exists();
     }
