@@ -21,10 +21,11 @@ final class MyAlbumRepository
     }
 
     /**
-     * @param int $spotifyId
+     * アルバムが登録されてるか確認
+     * @param string $spotifyId
      * @return bool
      */
-    public function existMyAlbumBySpotifyId(int $spotifyId): bool
+    public function existMyAlbumBySpotifyId(string $spotifyId): bool
     {
         return $this->myAlbumModel
             ->join('album', 'my_album.album_id', '=', 'album.id')

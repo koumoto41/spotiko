@@ -74,7 +74,7 @@ class StockService
                 'artist_name' => $item->artists[0]->name,
                 'artist_spotify_id' => $item->artists[0]->id,
                 'image' => $item->images[0]->url ?? '',
-                'is_register' => $this->myAlbumRepository->existMyAlbumBySpotifyId((int)$item->id)
+                'is_register' => $this->myAlbumRepository->existMyAlbumBySpotifyId($item->id)
             ];
         }
         return $result;
