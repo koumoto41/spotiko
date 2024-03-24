@@ -16,11 +16,12 @@ use App\Http\Controllers\DisplayController;
 use App\Http\Controllers\Cms\TopController;
 use App\Http\Controllers\Cms\StockController;
 use App\Http\Controllers\TokenController;
+use App\Http\Controllers\AggregateController;
 
 Route::group(['middleware' => 'auth.very_basic'], function () {
     Route::get('/token', [TokenController::class, 'getToken']);
-    Route::get('/aggregate/artist', 'AggregateController@aggregate_artist');
-    Route::get('/aggregate/track', 'AggregateController@aggregate_track');
+    Route::get('/aggregate/artist', [AggregateController::class, 'aggregateArtist']);
+    Route::get('/aggregate/track', [AggregateController::class, 'aggregateTrack']);
     Route::get('/', [DisplayController::class, 'getIndex']);
 
     Route::get('/cms', [TopController::class, 'getIndex']);

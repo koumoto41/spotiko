@@ -5,7 +5,9 @@ namespace App\Services;
 use App\Repositories\ArtistGenreMapRepository;
 use App\Repositories\ArtistGenreRepository;
 use App\Repositories\ArtistRepository;
+use App\Repositories\AlbumRepository;
 use App\Repositories\TopArtistRepository;
+use App\Services\SpotifyApiService;
 
 final class AggregateService
 {
@@ -14,7 +16,9 @@ final class AggregateService
     public const RANKING_POINT = 50;
 
     public function __construct(
+        private SpotifyApiService $spotifyApiService,
         private ArtistRepository $artistRepository,
+        private AlbumRepository $albumRepository,
         private ArtistGenreRepository $artistGenreRepository,
         private ArtistGenreMapRepository $artistGenreMapRepository,
         private TopArtistRepository $topArtistRepository
@@ -140,5 +144,65 @@ final class AggregateService
 
             $this->topArtistRepository->insertTopArtist($targetDate, $artistId, $popularity, $point);
         }
+    }
+
+
+    public function convertMyTopTrackToArrayBySpotifyApi($track, $userId)
+    {
+        $trackArray = [];
+
+        foreach ($track->items as $index => $row) {
+
+            $artistSpotifyId = $row->artists[0]->id;
+            $albumSpotifyId = $row->album->id;
+
+            $trackArray[$index]['track']['spotify_id'] = $row->id;
+            $trackArray[$index]['track']['name'] = $row->name;
+            $trackArray[$index]['track']['url'] = $row->external_urls->spotify;
+            $trackArray[$index]['track']['popularity'] = $row->popularity;
+            $trackArray[$index]['track']['track_number'] = $row->track_number;
+            $trackArray[$index]['track']['preview_url'] = $row->preview_url;
+
+            // アーティストの情報が無い場合は登録を行う
+            if (!$this->artistRepository->existArtist($artistSpotifyId)) {
+                // アーティスト情報をAPI経由で取得
+                $artist = $this->spotifyApiService->getArtistById($userId, $artistSpotifyId);
+
+                // 必要なデータを配列に入れる
+                $artist_array = $this->artistRepository->set_artist_array($artist);
+
+                # ジャンル情報をまとめる
+                $genre_array = $artist_genre_model->put_artist_genre_array($artist_array);
+
+                # アーティスト登録更新
+                $artist_model->insert_update_artist($artist_array);
+
+                # ジャンル登録
+                $artist_genre_model->insert_update_genre($genre_array);
+
+                # ジャンルマッピングする
+                $artist_genre_map_model->set_artist_genre_map($artist_array);
+            }
+
+            # アーティストIDをセット
+            $track_array[$index]['track']['artist_id'] = $artist_model->get_artist_id_by_spotify_id($artist_spotify_id);
+
+
+            # アルバムの情報が無い場合は登録を行う
+            if (!$album_model->exist_album($album_spotify_id)) {
+
+                # アルバム情報をAPI経由で取得
+                $album = $this->spotify_api_library->get_album_by_id($user_id, $album_spotify_id);
+
+                # 必要なデータを配列に入れる
+                $album_array = $album_model->set_album_array($album, $track_array[$index]['track']['artist_id']);
+
+                # アルバム情報更新
+                $album_model->insert_album($album_array);
+            }
+            # アルバムIDをセット
+            $track_array[$index]['track']['album_id'] = $album_model->get_album_id_by_spotify_id($album_spotify_id);
+        }
+        return $track_array;
     }
 }
