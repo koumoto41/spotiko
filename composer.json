@@ -9,21 +9,18 @@
     "license": "MIT",
     "require": {
         "php": "^8.0",
-        "doctrine/dbal": "2.*",
-        "fideloper/proxy": "^4.0",
+        "doctrine/dbal": "^3.6",
         "jeroennoten/laravel-adminlte": "3.8.6",
         "jwilsson/spotify-web-api-php": "^5.6",
-        "laravel/framework": "8.*",
+        "laravel/framework": "^12.0",
         "laravel/tinker": "^2.0",
         "linecorp/line-bot-sdk": "^4.2",
-        "olssonm/l5-very-basic-auth": "6.*"
+        "nuwave/lighthouse": "^6.8"
     },
     "require-dev": {
-        "beyondcode/laravel-dump-server": "^1.0",
-        "filp/whoops": "^2.0",
+        "laravel/pint": "^1.13",
         "fzaninotto/faker": "^1.4",
         "mockery/mockery": "^1.0",
-        "nunomaduro/collision": "^4.1",
         "phpunit/phpunit": "^8.5"
     },
     "config": {

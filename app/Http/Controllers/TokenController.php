@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Services\SpotifyApiService;
 use Exception;
 
-
 class TokenController extends Controller
 {
     private const USER_ID = 1;
@@ -25,6 +24,7 @@ class TokenController extends Controller
                     $code,
                     self::USER_ID
                 );
+                print("success！！！！");
             } catch (Exception $e) {
                 $message = $e->getMessage();
                 $code = $e->getCode();

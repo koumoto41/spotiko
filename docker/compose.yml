@@ -26,7 +26,7 @@ services:
       context: .
       dockerfile: ./mysql/Dockerfile
     ports:
-      - 3306:3306
+      - 3308:3306
     environment:
       MYSQL_DATABASE: spotiko
       MYSQL_USER: spotiko
