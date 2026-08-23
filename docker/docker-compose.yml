@@ -1,30 +1,40 @@
-version: "3.9"
-
 services:
-  app:
+  api:
     build:
       context: .
-      dockerfile: ./app/Dockerfile
+      dockerfile: ./api/Dockerfile
     volumes:
-      - ../../spotiko/:/app
-    container_name: spotiko_app
+      - ../:/app
+    depends_on:
+      - db
+    container_name: spotiko_api
 
-  web:
+  front:
     build:
       context: .
-      dockerfile: ./web/Dockerfile
+      dockerfile: ./front/Dockerfile
+    volumes:
+      - ../:/app
+    command: sh -c "npm install && npm run watch"
+    container_name: spotiko_front
+
+  apache:
+    build:
+      context: .
+      dockerfile: ./apache/Dockerfile
     ports:
       - "1111:80"
     depends_on:
-      - app
+      - api
+      - front
     volumes:
-      - ../../spotiko/:/app
-    container_name: spotiko_web
+      - ../:/app
+    container_name: spotiko_apache
 
-  mysql:
+  db:
     build:
       context: .
-      dockerfile: ./mysql/Dockerfile
+      dockerfile: ./db/Dockerfile
     ports:
       - 3306:3306
     environment:
@@ -34,6 +44,6 @@ services:
       MYSQL_ROOT_PASSWORD: sa
       TZ: 'Asia/Tokyo'
     volumes:
-      - ./mysql/data:/var/lib/mysql
-      - ./mysql/work:/docker-entrypoint-initdb.d/
-    container_name: spotiko_mysql
+      - ./db/data:/var/lib/mysql
+      - ./db/work:/docker-entrypoint-initdb.d/
+    container_name: spotiko_db
