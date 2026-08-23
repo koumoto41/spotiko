@@ -1,71 +1,80 @@
-<p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
+# Spotiko
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/d/total.svg" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/v/stable.svg" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://poser.pugx.org/laravel/framework/license.svg" alt="License"></a>
-</p>
+Spotifyの視聴データ（トップアーティスト/トラック、ジャンル）を集計するアプリ。クリーンアーキテクチャで構築したLaravel 13のJSON APIと、React（Vite + TypeScript）のSPAで構成し、LINEボットのwebhookにも返信する。
 
-## About Laravel
+## 主な機能
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **トップランキング表示**: 集計済みのアーティスト/トラックランキングを閲覧
+- **ストック管理**: Spotify検索からアルバムを登録・一覧表示
+- **Spotify連携**: OAuthで自分のSpotifyアカウントと連携し、視聴データを取得
+- **集計トリガー**: アーティスト/トラックの集計をSPAから手動実行（Artisanコマンドからも実行可）
+- **LINEボット**: LINEからのメッセージにキーワードマッチでおすすめを返信
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 技術スタック
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+| レイヤー | 技術 |
+|---|---|
+| API | Laravel 13 (PHP ^8.3) / クリーンアーキテクチャ (Domain / Application / Infrastructure / Presentation) |
+| 認証 | Laravel Sanctum（SPA・cookieベース） |
+| フロントエンド | React 18 + Vite + TypeScript |
+| DB | MySQL |
+| 外部連携 | Spotify Web API (`jwilsson/spotify-web-api-php`), LINE Messaging API (`linecorp/line-bot-sdk`) |
+| テスト | Pest（バックエンド）/ Jest + React Testing Library（フロントエンド） |
+| 静的解析・整形 | Larastan (PHPStan), Laravel Pint, ESLint |
+| 実行環境 | Docker Compose（`api` / `front` / `apache` / `db` の4コンテナ） |
 
-## Learning Laravel
+## セットアップ
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+```bash
+cd docker
+docker compose up -d
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1100 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost you and your team's skills by digging into our comprehensive video library.
+# API
+docker compose exec api composer install
+docker compose exec api php artisan migrate --seed   # 管理者ユーザーを1件シード
 
-## Laravel Sponsors
+# フロントエンド
+docker compose exec front npm install
+docker compose exec front npm run dev                # http://localhost:5173 でホットリロード
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+apache経由（`http://localhost:1111`）で本番ビルド相当のSPA + APIが単一オリジンで確認できる。`.env`には `SANCTUM_STATEFUL_DOMAINS` に `localhost:1111` / `localhost:5173` を含めておくこと。
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[British Software Development](https://www.britishsoftware.co)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- [UserInsights](https://userinsights.com)
-- [Fragrantica](https://www.fragrantica.com)
-- [SOFTonSOFA](https://softonsofa.com/)
-- [User10](https://user10.com)
-- [Soumettre.fr](https://soumettre.fr/)
-- [CodeBrisk](https://codebrisk.com)
-- [1Forge](https://1forge.com)
-- [TECPRESSO](https://tecpresso.co.jp/)
-- [Runtime Converter](http://runtimeconverter.com/)
-- [WebL'Agence](https://weblagence.com/)
-- [Invoice Ninja](https://www.invoiceninja.com)
-- [iMi digital](https://www.imi-digital.de/)
-- [Earthlink](https://www.earthlink.ro/)
-- [Steadfast Collective](https://steadfastcollective.com/)
-- [We Are The Robots Inc.](https://watr.mx/)
-- [Understand.io](https://www.understand.io/)
-- [Abdel Elrafa](https://abdelelrafa.com)
+Spotify連携を使う場合は `config/spotify.php` に対応する `SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET` を、LINEボットを使う場合は `LINE_ACCESS_TOKEN` / `LINE_CHANNEL_SECRET` を `.env` に設定する。
 
-## Contributing
+## よく使うコマンド
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+# API
+docker compose exec api vendor/bin/pest              # テスト
+docker compose exec api vendor/bin/phpstan analyse    # 静的解析
+docker compose exec api vendor/bin/pint               # フォーマット
 
-## Security Vulnerabilities
+# フロントエンド
+docker compose exec front npm run test                # テスト
+docker compose exec front npm run lint                # Lint
+docker compose exec front npm run build                # 型チェック + ビルド(../public/へ出力)
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+カスタムArtisanコマンド: `command:AggregateArtist` / `command:AggregateTrack`（集計処理。APIエンドポイントからも実行可）、`command:PushMessage`（LINEへのプッシュ送信）。
 
-## License
+## ディレクトリ構成
 
-The Laravel framework is open-source software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+```
+app/
+  Domain/           # Repositoryのinterface。フレームワーク非依存
+  Application/       # UseCase・Service。Domainのinterfaceにのみ依存
+  Infrastructure/     # Eloquentモデル・Repository実装、外部APIクライアント
+  Presentation/       # Controller・Request・Resource
+front/
+  src/api/           # バックエンドAPIラッパー
+  src/auth/           # 認証状態・ルートガード
+  src/pages/          # 画面ごとのコンポーネント
+docker/               # docker-compose.yml、各サービスのDockerfile
+```
+
+詳しいアーキテクチャや開発方針は [CLAUDE.md](./CLAUDE.md) を参照。
+
+## テスト方針
+
+バックエンドはPest、フロントエンドはJest + React Testing Libraryを使用。方針の詳細は [`.claude/rules/backend-testing.md`](./.claude/rules/backend-testing.md) / [`.claude/rules/frontend-testing.md`](./.claude/rules/frontend-testing.md) を参照。
