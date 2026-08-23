@@ -7,9 +7,7 @@ use App\Infrastructure\Persistence\Eloquent\Models\Track;
 
 final class TrackRepository implements TrackRepositoryInterface
 {
-    public function __construct(private Track $trackModel)
-    {
-    }
+    public function __construct(private Track $trackModel) {}
 
     public function existTrack(string $spotifyId): bool
     {
@@ -27,7 +25,7 @@ final class TrackRepository implements TrackRepositoryInterface
     {
         $rows = array_column($trackArray, 'track');
 
-        if (!$rows) {
+        if (! $rows) {
             return;
         }
 

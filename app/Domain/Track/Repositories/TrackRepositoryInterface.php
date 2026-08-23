@@ -9,7 +9,7 @@ interface TrackRepositoryInterface
     public function getTrackIdBySpotifyId(string $spotifyId): ?int;
 
     /**
-     * @param array<int, array{track: array}> $trackArray
+     * @param  array<int, array{track: array}>  $trackArray
      */
     public function upsertTrack(array $trackArray): void;
 }

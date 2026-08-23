@@ -7,9 +7,7 @@ use App\Infrastructure\Persistence\Eloquent\Models\Token;
 
 final class TokenRepository implements TokenRepositoryInterface
 {
-    public function __construct(private Token $tokenModel)
-    {
-    }
+    public function __construct(private Token $tokenModel) {}
 
     public function getTokenByUserId(int $userId): ?Token
     {

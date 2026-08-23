@@ -12,9 +12,7 @@ final class StockController extends Controller
 {
     private const LIST_LIMIT = 20;
 
-    public function __construct(private StockService $stockService)
-    {
-    }
+    public function __construct(private StockService $stockService) {}
 
     public function index(Request $request): JsonResponse
     {

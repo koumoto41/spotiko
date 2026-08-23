@@ -15,8 +15,7 @@ final class AggregateArtistUseCase
         private AggregateService $aggregateService,
         private ArtistRepositoryInterface $artistRepository,
         private ArtistGenreRepositoryInterface $artistGenreRepository
-    ) {
-    }
+    ) {}
 
     public function __invoke(int $userId): void
     {
@@ -26,6 +25,7 @@ final class AggregateArtistUseCase
             if ($this->spotifyClient->checkRefreshToken($e, $userId)) {
                 $this->__invoke($userId);
             }
+
             return;
         }
 

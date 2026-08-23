@@ -15,6 +15,7 @@ final class LineMessagingClient implements LineMessagingClientInterface
     private const EXCLUSION_REPLY_TOKEN_LIST = ['00000000000000000000000000000000'];
 
     private string $lineAccessToken;
+
     private string $lineChannelSecret;
 
     public function __construct()
@@ -27,7 +28,7 @@ final class LineMessagingClient implements LineMessagingClientInterface
     {
         $signature = $request->headers->get(HTTPHeader::LINE_SIGNATURE);
 
-        if (!$signature || !SignatureValidator::validateSignature($request->getContent(), $this->lineChannelSecret, $signature)) {
+        if (! $signature || ! SignatureValidator::validateSignature($request->getContent(), $this->lineChannelSecret, $signature)) {
             return false;
         }
 
@@ -53,7 +54,7 @@ final class LineMessagingClient implements LineMessagingClientInterface
 
     public function isValidReplyToken(string $replyToken): bool
     {
-        return !in_array($replyToken, self::EXCLUSION_REPLY_TOKEN_LIST, true);
+        return ! in_array($replyToken, self::EXCLUSION_REPLY_TOKEN_LIST, true);
     }
 
     public function getText(object $event): string

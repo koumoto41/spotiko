@@ -7,14 +7,15 @@ use App\Domain\Artist\Repositories\ArtistRepositoryInterface;
 use App\Domain\ArtistGenre\Repositories\ArtistGenreRepositoryInterface;
 use App\Domain\ArtistGenreMap\Repositories\ArtistGenreMapRepositoryInterface;
 use App\Domain\Spotify\SpotifyClientInterface;
-use App\Domain\Track\Repositories\TrackRepositoryInterface;
 use App\Domain\TopArtist\Repositories\TopArtistRepositoryInterface;
 use App\Domain\TopTrack\Repositories\TopTrackRepositoryInterface;
+use App\Domain\Track\Repositories\TrackRepositoryInterface;
 
 final class AggregateService
 {
     // 登録許可画像サイズ
     public const ALLOWED_IMAGE_WIDTH = ['640', '320', '160'];
+
     public const RANKING_POINT = 50;
 
     public function __construct(
@@ -26,8 +27,7 @@ final class AggregateService
         private ArtistGenreMapRepositoryInterface $artistGenreMapRepository,
         private TopArtistRepositoryInterface $topArtistRepository,
         private TopTrackRepositoryInterface $topTrackRepository
-    ) {
-    }
+    ) {}
 
     /**
      * SpotifyAPI:getMyTopで取得したartist情報を配列に変換
@@ -51,7 +51,7 @@ final class AggregateService
             foreach ($row->images as $image) {
                 // 画像の登録はこのタイプに限定
                 if (in_array((string) $image->height, self::ALLOWED_IMAGE_WIDTH, true)) {
-                    $artistArray[$index]['artist']['img_' . $image->height] = $image->url;
+                    $artistArray[$index]['artist']['img_'.$image->height] = $image->url;
                 }
             }
 
@@ -71,12 +71,12 @@ final class AggregateService
     {
         $genreArray = [];
         foreach ($artistArray as $row) {
-            if (!isset($row['genre'])) {
+            if (! isset($row['genre'])) {
                 continue;
             }
 
             foreach ($row['genre'] as $genre) {
-                if (!in_array($genre, $genreArray, true)) {
+                if (! in_array($genre, $genreArray, true)) {
                     $genreArray[] = $genre;
                 }
             }
@@ -88,7 +88,7 @@ final class AggregateService
     public function mapArtistGenre(array $artistArray): void
     {
         foreach ($artistArray as $row) {
-            if (!isset($row['genre'])) {
+            if (! isset($row['genre'])) {
                 continue;
             }
 
@@ -155,7 +155,7 @@ final class AggregateService
             $trackArray[$index]['track']['preview_url'] = $row->preview_url;
 
             // アーティストの情報が無い場合は登録を行う
-            if (!$this->artistRepository->existArtist($artistSpotifyId)) {
+            if (! $this->artistRepository->existArtist($artistSpotifyId)) {
                 $artist = $this->spotifyClient->getArtistById($userId, $artistSpotifyId);
                 $artistArray = $this->convertMyTopArtistToArrayBySpotifyApi($artist);
                 $genreArray = $this->putArtistGenreArray($artistArray);
@@ -168,7 +168,7 @@ final class AggregateService
             $trackArray[$index]['track']['artist_id'] = $this->artistRepository->getArtistIdBySpotifyId($artistSpotifyId);
 
             // アルバムの情報が無い場合は登録を行う
-            if (!$this->albumRepository->existAlbum($albumSpotifyId)) {
+            if (! $this->albumRepository->existAlbum($albumSpotifyId)) {
                 $album = $this->spotifyClient->getAlbumById($userId, $albumSpotifyId);
                 $albumArray = $this->makeAlbumArray($album, $trackArray[$index]['track']['artist_id']);
                 $this->albumRepository->insertAlbum($albumArray);
@@ -224,7 +224,7 @@ final class AggregateService
 
         foreach ($album->images as $image) {
             if (in_array((string) $image->height, ['640', '300', '64'], true)) {
-                $albumArray['img_' . $image->height] = $image->url;
+                $albumArray['img_'.$image->height] = $image->url;
             }
         }
 

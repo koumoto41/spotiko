@@ -8,9 +8,7 @@ use Illuminate\Support\Collection;
 
 final class TopTrackRepository implements TopTrackRepositoryInterface
 {
-    public function __construct(private TopTrack $topTrackModel)
-    {
-    }
+    public function __construct(private TopTrack $topTrackModel) {}
 
     public function getLatestAggregateDate(): ?string
     {

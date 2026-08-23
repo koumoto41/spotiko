@@ -7,9 +7,7 @@ use App\Infrastructure\Persistence\Eloquent\Models\ArtistGenreMap;
 
 final class ArtistGenreMapRepository implements ArtistGenreMapRepositoryInterface
 {
-    public function __construct(private ArtistGenreMap $artistGenreMapModel)
-    {
-    }
+    public function __construct(private ArtistGenreMap $artistGenreMapModel) {}
 
     public function firstOrCreateArtistGenreMap(int $artistId, int $genreId): ArtistGenreMap
     {

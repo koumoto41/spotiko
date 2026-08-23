@@ -15,11 +15,17 @@ use Illuminate\Support\Facades\Log;
 final class LineWebhookController extends Controller
 {
     private const USER_ID = 1;
+
     private const HELP_SEARCH_WORD = 'help';
+
     private const RECOMMEND_SEARCH_WORD = 'おすすめ：';
+
     private const NEW_RELEASE_SEARCH_WORD = '新着';
+
     private const FEATURE_PLAYLIST_SEARCH_WORD = '注目プレイリスト';
+
     private const ARTIST_SEARCH_WORD = 'アーティスト';
+
     private const TRACK_SEARCH_WORD = '曲';
 
     public function __construct(
@@ -27,8 +33,7 @@ final class LineWebhookController extends Controller
         private SpotifyClientInterface $spotifyClient,
         private TopArtistRepositoryInterface $topArtistRepository,
         private TopTrackRepositoryInterface $topTrackRepository
-    ) {
-    }
+    ) {}
 
     public function webhook(Request $request): Response
     {
@@ -36,6 +41,7 @@ final class LineWebhookController extends Controller
 
         if ($signature === false) {
             Log::info('LINE webhook: invalid signature');
+
             return response()->noContent();
         }
 
@@ -47,7 +53,7 @@ final class LineWebhookController extends Controller
             foreach ($events as $event) {
                 $replyToken = $this->lineMessagingClient->getReplyToken($event);
 
-                if (!$this->lineMessagingClient->isValidReplyToken($replyToken)) {
+                if (! $this->lineMessagingClient->isValidReplyToken($replyToken)) {
                     continue;
                 }
 
@@ -90,7 +96,7 @@ final class LineWebhookController extends Controller
 
         if ($searchWord === self::ARTIST_SEARCH_WORD) {
             $targetDate = $this->topArtistRepository->getLatestAggregateDate();
-            if (!$targetDate) {
+            if (! $targetDate) {
                 return '';
             }
             $result = '';
@@ -100,12 +106,13 @@ final class LineWebhookController extends Controller
                 }
                 $result .= "{$value->name}\n{$value->url}\n\n";
             }
+
             return $result;
         }
 
         if ($searchWord === self::TRACK_SEARCH_WORD) {
             $targetDate = $this->topTrackRepository->getLatestAggregateDate();
-            if (!$targetDate) {
+            if (! $targetDate) {
                 return '';
             }
             $result = '';
@@ -115,6 +122,7 @@ final class LineWebhookController extends Controller
                 }
                 $result .= "{$value->track_name} - {$value->album_name}\n{$value->artist_name}\n{$value->track_url}\n\n";
             }
+
             return $result;
         }
 
@@ -124,10 +132,10 @@ final class LineWebhookController extends Controller
     private function createHelpContent(): string
     {
         $helpText = "説明しよう！\n";
-        $helpText .= 'おすすめアーティスト紹介は【' . self::RECOMMEND_SEARCH_WORD . self::ARTIST_SEARCH_WORD . "】！\n";
-        $helpText .= 'おすすめ曲紹介は【' . self::RECOMMEND_SEARCH_WORD . self::TRACK_SEARCH_WORD . "】！\n";
-        $helpText .= '新着アルバム曲取得は【' . self::NEW_RELEASE_SEARCH_WORD . "】！\n";
-        $helpText .= '注目のプレイリスト取得は【' . self::FEATURE_PLAYLIST_SEARCH_WORD . "】！\n";
+        $helpText .= 'おすすめアーティスト紹介は【'.self::RECOMMEND_SEARCH_WORD.self::ARTIST_SEARCH_WORD."】！\n";
+        $helpText .= 'おすすめ曲紹介は【'.self::RECOMMEND_SEARCH_WORD.self::TRACK_SEARCH_WORD."】！\n";
+        $helpText .= '新着アルバム曲取得は【'.self::NEW_RELEASE_SEARCH_WORD."】！\n";
+        $helpText .= '注目のプレイリスト取得は【'.self::FEATURE_PLAYLIST_SEARCH_WORD."】！\n";
 
         return $helpText;
     }

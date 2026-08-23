@@ -7,9 +7,7 @@ use App\Infrastructure\Persistence\Eloquent\Models\Artist;
 
 final class ArtistRepository implements ArtistRepositoryInterface
 {
-    public function __construct(private Artist $artistModel)
-    {
-    }
+    public function __construct(private Artist $artistModel) {}
 
     public function existArtist(string $spotifyId): bool
     {
@@ -27,7 +25,7 @@ final class ArtistRepository implements ArtistRepositoryInterface
     {
         $rows = array_column($artistArray, 'artist');
 
-        if (!$rows) {
+        if (! $rows) {
             return;
         }
 

@@ -6,9 +6,7 @@ use App\Domain\Spotify\SpotifyClientInterface;
 
 final class FeaturePlayListService
 {
-    public function __construct(private SpotifyClientInterface $spotifyClient)
-    {
-    }
+    public function __construct(private SpotifyClientInterface $spotifyClient) {}
 
     public function createFeaturePlaylistContent(int $userId = 1): string
     {

@@ -8,9 +8,7 @@ use Illuminate\Support\Collection;
 
 final class AlbumRepository implements AlbumRepositoryInterface
 {
-    public function __construct(private Album $albumModel)
-    {
-    }
+    public function __construct(private Album $albumModel) {}
 
     public function existAlbum(string $spotifyId): bool
     {

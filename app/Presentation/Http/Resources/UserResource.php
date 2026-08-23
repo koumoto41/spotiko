@@ -2,10 +2,11 @@
 
 namespace App\Presentation\Http\Resources;
 
+use App\Infrastructure\Persistence\Eloquent\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin \App\Infrastructure\Persistence\Eloquent\Models\User */
+/** @mixin User */
 class UserResource extends JsonResource
 {
     public function toArray(Request $request): array

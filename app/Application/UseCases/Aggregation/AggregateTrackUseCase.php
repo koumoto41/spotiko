@@ -13,8 +13,7 @@ final class AggregateTrackUseCase
         private SpotifyClientInterface $spotifyClient,
         private AggregateService $aggregateService,
         private TrackRepositoryInterface $trackRepository
-    ) {
-    }
+    ) {}
 
     public function __invoke(int $userId): void
     {
@@ -24,6 +23,7 @@ final class AggregateTrackUseCase
             if ($this->spotifyClient->checkRefreshToken($e, $userId)) {
                 $this->__invoke($userId);
             }
+
             return;
         }
 

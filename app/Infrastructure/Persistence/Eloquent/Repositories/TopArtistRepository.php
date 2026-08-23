@@ -8,9 +8,7 @@ use Illuminate\Support\Collection;
 
 final class TopArtistRepository implements TopArtistRepositoryInterface
 {
-    public function __construct(private TopArtist $topArtistModel)
-    {
-    }
+    public function __construct(private TopArtist $topArtistModel) {}
 
     public function getLatestAggregateDate(): ?string
     {

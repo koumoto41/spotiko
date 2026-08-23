@@ -13,9 +13,7 @@ final class SpotifyAuthController extends Controller
 {
     private const USER_ID = 1;
 
-    public function __construct(private SpotifyClientInterface $spotifyClient)
-    {
-    }
+    public function __construct(private SpotifyClientInterface $spotifyClient) {}
 
     public function authorizeUrl(): JsonResponse
     {
@@ -27,7 +25,7 @@ final class SpotifyAuthController extends Controller
         $frontendUrl = rtrim((string) config('app.frontend_url'), '/');
         $code = $request->query('code');
 
-        if (!$code) {
+        if (! $code) {
             return redirect()->away("{$frontendUrl}/spotify/callback?status=error");
         }
 
@@ -35,6 +33,7 @@ final class SpotifyAuthController extends Controller
             $this->spotifyClient->getAccessToken($code, self::USER_ID);
         } catch (Throwable $e) {
             report($e);
+
             return redirect()->away("{$frontendUrl}/spotify/callback?status=error");
         }
 

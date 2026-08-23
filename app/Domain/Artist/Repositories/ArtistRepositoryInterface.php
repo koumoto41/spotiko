@@ -9,7 +9,7 @@ interface ArtistRepositoryInterface
     public function getArtistIdBySpotifyId(string $spotifyId): ?int;
 
     /**
-     * @param array<int, array{artist: array, genre?: array}> $artistArray
+     * @param  array<int, array{artist: array, genre?: array}>  $artistArray
      */
     public function upsertArtist(array $artistArray): void;
 }

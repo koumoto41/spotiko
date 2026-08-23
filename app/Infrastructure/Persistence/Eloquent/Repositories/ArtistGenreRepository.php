@@ -7,9 +7,7 @@ use App\Infrastructure\Persistence\Eloquent\Models\ArtistGenre;
 
 final class ArtistGenreRepository implements ArtistGenreRepositoryInterface
 {
-    public function __construct(private ArtistGenre $artistGenreModel)
-    {
-    }
+    public function __construct(private ArtistGenre $artistGenreModel) {}
 
     public function getGenreIdByGenreName(string $genreName): ?int
     {
@@ -22,7 +20,7 @@ final class ArtistGenreRepository implements ArtistGenreRepositoryInterface
     {
         $rows = array_map(static fn (string $name): array => ['name' => $name], $genreArray);
 
-        if (!$rows) {
+        if (! $rows) {
             return;
         }
 

@@ -8,9 +8,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 final class MyAlbumRepository implements MyAlbumRepositoryInterface
 {
-    public function __construct(private MyAlbum $myAlbumModel)
-    {
-    }
+    public function __construct(private MyAlbum $myAlbumModel) {}
 
     public function existMyAlbum(int $albumId): bool
     {

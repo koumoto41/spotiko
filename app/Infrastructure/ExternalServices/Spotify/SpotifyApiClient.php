@@ -59,6 +59,7 @@ final class SpotifyApiClient implements SpotifyClientInterface
     {
         if ($exception->getCode() === 401 && $exception->getMessage() === 'The access token expired') {
             $this->refreshAccessToken($userId);
+
             return true;
         }
 

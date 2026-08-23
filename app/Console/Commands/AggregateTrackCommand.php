@@ -10,6 +10,7 @@ class AggregateTrackCommand extends Command
     private const USER_ID = 1;
 
     protected $signature = 'command:AggregateTrack';
+
     protected $description = '曲目集計';
 
     public function handle(AggregateTrackUseCase $aggregateTrack): int

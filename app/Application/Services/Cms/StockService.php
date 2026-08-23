@@ -20,8 +20,7 @@ final class StockService
         private ArtistRepositoryInterface $artistRepository,
         private ArtistGenreRepositoryInterface $artistGenreRepository,
         private ArtistGenreMapRepositoryInterface $artistGenreMapRepository
-    ) {
-    }
+    ) {}
 
     public function getMyAlbumList(string $query, string $type, int $limit, int $offset): array
     {
@@ -62,7 +61,7 @@ final class StockService
      */
     public function registerMyAlbum(string $artistSpotifyId, string $albumSpotifyId): array
     {
-        if (!$this->artistRepository->existArtist($artistSpotifyId)) {
+        if (! $this->artistRepository->existArtist($artistSpotifyId)) {
             $artist = $this->spotifyClient->getArtistById(self::REGISTER_USER_ID, $artistSpotifyId);
             $artistArray = $this->makeArtistArray($artist);
             $genreArray = $this->putArtistGenreArray($artistArray);
@@ -73,7 +72,7 @@ final class StockService
         }
         $registerArtistId = $this->artistRepository->getArtistIdBySpotifyId($artistSpotifyId);
 
-        if (!$this->albumRepository->existAlbum($albumSpotifyId)) {
+        if (! $this->albumRepository->existAlbum($albumSpotifyId)) {
             $album = $this->spotifyClient->getAlbumById(self::REGISTER_USER_ID, $albumSpotifyId);
             $albumArray = $this->makeAlbumArray($album, $registerArtistId);
             $this->albumRepository->insertAlbum($albumArray);
@@ -106,7 +105,7 @@ final class StockService
 
             foreach ($row->images as $image) {
                 if (in_array((string) $image->height, ['640', '320', '160'], true)) {
-                    $artistArray[$index]['artist']['img_' . $image->height] = $image->url;
+                    $artistArray[$index]['artist']['img_'.$image->height] = $image->url;
                 }
             }
 
@@ -122,12 +121,12 @@ final class StockService
     {
         $result = [];
         foreach ($artistArray as $row) {
-            if (!isset($row['genre'])) {
+            if (! isset($row['genre'])) {
                 continue;
             }
 
             foreach ($row['genre'] as $genre) {
-                if (!in_array($genre, $result, true)) {
+                if (! in_array($genre, $result, true)) {
                     $result[] = $genre;
                 }
             }
@@ -139,13 +138,13 @@ final class StockService
     private function registerArtistGenreMap(array $artistArray): void
     {
         foreach ($artistArray as $row) {
-            if (!isset($row['genre'])) {
+            if (! isset($row['genre'])) {
                 continue;
             }
 
             $artist = $row['artist'];
             $artistId = $this->artistRepository->getArtistIdBySpotifyId($artist['spotify_id']);
-            if (!$artistId) {
+            if (! $artistId) {
                 continue;
             }
 
@@ -176,7 +175,7 @@ final class StockService
 
         foreach ($album->images as $image) {
             if (in_array((string) $image->height, ['640', '300', '64'], true)) {
-                $albumArray['img_' . $image->height] = $image->url;
+                $albumArray['img_'.$image->height] = $image->url;
             }
         }
 

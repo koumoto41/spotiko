@@ -7,7 +7,7 @@ interface ArtistGenreRepositoryInterface
     public function getGenreIdByGenreName(string $genreName): ?int;
 
     /**
-     * @param array<int, string> $genreArray
+     * @param  array<int, string>  $genreArray
      */
     public function upsertGenre(array $genreArray): void;
 }
