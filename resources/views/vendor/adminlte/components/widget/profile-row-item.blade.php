@@ -9,7 +9,7 @@
 
         {{-- Header --}}
         @isset($title)
-            @if(! empty($url))
+            @if(! empty($url) && $urlTarget === 'title')
                 <a href="{{ $url }}">{{ $title }}</a>
             @else
                 {{ $title }}
@@ -18,8 +18,13 @@
 
         {{-- Text --}}
         @isset($text)
-            <span class="{{ $makeTextWrapperClass() }}">
-                {{ $text }}
+            <span class="{{ $makeTextWrapperClass() }}"
+                @isset($textTooltip) title="{{ $textTooltip }}" style="cursor:help;" @endisset>
+                @if(! empty($url) && $urlTarget === 'text')
+                    <a href="{{ $url }}">{{ $text }}</a>
+                @else
+                    {{ $text }}
+                @endif
             </span>
         @endisset
 

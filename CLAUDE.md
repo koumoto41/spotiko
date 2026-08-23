@@ -4,11 +4,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Spotiko: a Laravel 8 (PHP ^8.0) app that aggregates a user's Spotify listening data (top artists/tracks, genres) via the Spotify Web API, exposes rankings through a CMS-style web UI (AdminLTE), and pushes/replies to users over a LINE bot webhook.
+Spotiko: a Laravel 13 (PHP ^8.3) app that aggregates a user's Spotify listening data (top artists/tracks, genres) via the Spotify Web API, exposes rankings through a CMS-style web UI (AdminLTE), and pushes/replies to users over a LINE bot webhook.
 
 ## Commands
 
-Run via Docker (see `docker/docker-compose.yml`, services `spotiko_app` / `spotiko_web` / `spotiko_mysql`), or locally if PHP/Composer/Node are installed.
+Run via Docker (see `docker/docker-compose.yml`, services `spotiko_api` (php-fpm) / `spotiko_front` (node/laravel-mix asset build) / `spotiko_apache` (web server) / `spotiko_db` (mysql)), or locally if PHP/Composer/Node are installed.
 
 ```bash
 composer install
