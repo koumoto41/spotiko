@@ -3,7 +3,6 @@
 namespace App\Repositories;
 
 use App\Models\Artist_Genre_Map;
-use Illuminate\Support\Collection;
 
 final class ArtistGenreMapRepository
 {
@@ -16,9 +15,9 @@ final class ArtistGenreMapRepository
      * データが無かったら追加する
      * @param int $artistId
      * @param int $genreId
-     * @return Collection
+     * @return Artist_Genre_Map
      */
-    public function firstOrCreateArtistGenreMap(int $artistId, int $genreId): Collection
+    public function firstOrCreateArtistGenreMap(int $artistId, int $genreId): Artist_Genre_Map
     {
         return $this->artistGenreMapModel->firstOrCreate([
             'artist_id' => $artistId,

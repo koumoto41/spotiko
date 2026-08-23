@@ -132,9 +132,9 @@ final class SpotifyApiService
      * @param int $userId
      * @param int $limit
      * @param int $offset
-     * @return array
+     * @return object
      */
-    public function getFeaturePlaylist(int $userId, int $limit = 20, int $offset = 0): array
+    public function getFeaturePlaylist(int $userId, int $limit = 20, int $offset = 0): object
     {
         $this->setAccessToken($userId);
         return $this->spotifyWebApi->getFeaturedPlaylists([
@@ -149,7 +149,7 @@ final class SpotifyApiService
      * @param int $limit
      * @param int $offset
      * @param string $time_range
-     * @return array
+     * @return object
      */
     public function getMyTop(
         int $userId,
@@ -157,10 +157,10 @@ final class SpotifyApiService
         int $limit = 100,
         int $offset = 0,
         string $time_range = 'short_term'
-    ): array {
+    ): object {
         $this->setAccessToken($userId);
 
-        return $this->api->getMyTop($type, [
+        return $this->spotifyWebApi->getMyTop($type, [
             'limit' => $limit,
             'offset' => $offset,
             'time_range' => $time_range

@@ -132,14 +132,13 @@ final class AggregateService
 
         foreach ($artistArray as $key => $row) {
             // Artist取得
-            $artist = $this->artistRepository->getArtistIdBySpotifyId($row['artist']['spotify_id']);
+            $artistId = $this->artistRepository->getArtistIdBySpotifyId($row['artist']['spotify_id']);
 
-            if (is_null($artist)) {
+            if (is_null($artistId)) {
                 continue;
             }
 
-            $artistId = $artist->id;
-            $popularity = $artist->popularity;
+            $popularity = $row['artist']['popularity'];
             $point = self::RANKING_POINT - (int)$key;
 
             $this->topArtistRepository->insertTopArtist($targetDate, $artistId, $popularity, $point);

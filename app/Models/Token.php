@@ -22,7 +22,7 @@ class Token extends Model
      */
     public function get_data() {
         $data = DB::table($this->table)->get();
-        return $data->toArray;
+        return $data->toArray();
     }
 
     /**

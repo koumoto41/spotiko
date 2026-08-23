@@ -17,6 +17,7 @@ class TableService
     public function initialize(): array
     {
         $this->table = [];
+        return $this->table;
     }
 
     public function setTh($value): TableService

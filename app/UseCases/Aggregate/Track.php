@@ -18,7 +18,7 @@ final class Track
     ) {
     }
 
-    public function __invoke(int $userId): string
+    public function __invoke(int $userId): void
     {
         try {
             $myTopTrack = $this->spotifyApiService->getMyTop($userId, 'tracks');
