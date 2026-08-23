@@ -6,6 +6,6 @@
     "esModuleInterop": true,
     "isolatedModules": false,
     "jsx": "react-jsx",
-    "types": ["jest", "@testing-library/jest-dom"]
+    "types": ["node", "jest", "@testing-library/jest-dom"]
   }
 }

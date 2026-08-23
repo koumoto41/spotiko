@@ -9,10 +9,7 @@ const mockedUseAuth = useAuth as jest.Mock
 
 function renderWithRouter() {
   return render(
-    <MemoryRouter
-      initialEntries={['/protected']}
-      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
-    >
+    <MemoryRouter initialEntries={['/protected']}>
       <Routes>
         <Route path="/login" element={<p>login page</p>} />
         <Route
