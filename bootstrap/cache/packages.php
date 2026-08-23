@@ -1,9 +1,9 @@
 <?php return array (
-  'jeroennoten/laravel-adminlte' => 
+  'laravel/sanctum' => 
   array (
     'providers' => 
     array (
-      0 => 'JeroenNoten\\LaravelAdminLte\\AdminLteServiceProvider',
+      0 => 'Laravel\\Sanctum\\SanctumServiceProvider',
     ),
   ),
   'laravel/tinker' => 
@@ -32,13 +32,6 @@
     'providers' => 
     array (
       0 => 'Termwind\\Laravel\\TermwindServiceProvider',
-    ),
-  ),
-  'olssonm/l5-very-basic-auth' => 
-  array (
-    'providers' => 
-    array (
-      0 => 'Olssonm\\VeryBasicAuth\\VeryBasicAuthServiceProvider',
     ),
   ),
 );

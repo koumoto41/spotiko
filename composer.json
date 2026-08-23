@@ -9,16 +9,15 @@
     "license": "MIT",
     "require": {
         "php": "^8.3",
-        "jeroennoten/laravel-adminlte": "^3.5",
         "jwilsson/spotify-web-api-php": "^5.6",
         "laravel/framework": "^13.0",
+        "laravel/sanctum": "^4.3",
         "laravel/tinker": "^3.0",
-        "linecorp/line-bot-sdk": "^4.2",
-        "olssonm/l5-very-basic-auth": "^7.4"
+        "linecorp/line-bot-sdk": "^4.2"
     },
     "require-dev": {
+        "fakerphp/faker": "^1.24",
         "filp/whoops": "^2.0",
-        "fzaninotto/faker": "^1.4",
         "larastan/larastan": "^3.10",
         "mockery/mockery": "^1.0",
         "nunomaduro/collision": "^8.1",
@@ -38,12 +37,10 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "app/"
-        },
-        "classmap": [
-            "database/seeds",
-            "database/factories"
-        ]
+            "App\\": "app/",
+            "Database\\Factories\\": "database/factories/",
+            "Database\\Seeders\\": "database/seeders/"
+        }
     },
     "autoload-dev": {
         "psr-4": {

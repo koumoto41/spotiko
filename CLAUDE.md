@@ -4,76 +4,83 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Spotiko: a Laravel 13 (PHP ^8.3) app that aggregates a user's Spotify listening data (top artists/tracks, genres) via the Spotify Web API, exposes rankings through a CMS-style web UI (AdminLTE), and pushes/replies to users over a LINE bot webhook.
+Spotiko: a Spotify listening-data aggregator (top artists/tracks, genres) split into a Laravel 13 (PHP ^8.3) JSON API built with clean architecture, and a React (Vite + TypeScript) SPA. It also replies to users over a LINE bot webhook.
 
 ## Commands
 
-Run via Docker (see `docker/docker-compose.yml`, services `spotiko_api` (php-fpm) / `spotiko_front` (node/laravel-mix asset build) / `spotiko_apache` (web server) / `spotiko_db` (mysql)), or locally if PHP/Composer/Node are installed.
+Run via Docker (`docker/docker-compose.yml`, services `spotiko_api` (php-fpm) / `spotiko_front` (Vite dev server) / `spotiko_apache` (web server, port 1111) / `spotiko_db` (mysql)):
 
 ```bash
-composer install
-cp .env.example .env && php artisan key:generate
+cd docker && docker compose up -d
 
-php artisan serve                 # dev server
-php artisan migrate                # run migrations (database/migrations)
+# api
+docker compose exec api composer install
+docker compose exec api php artisan migrate --seed   # seeds one admin user, see AdminUserSeeder
+docker compose exec api vendor/bin/phpunit
+docker compose exec api vendor/bin/phpstan analyse    # larastan, level 5, see phpstan.neon
 
-npm install
-npm run dev                        # webpack build (dev)
-npm run watch                      # rebuild on change
-npm run prod                       # production build
-
-vendor/bin/phpunit                          # run full test suite
-vendor/bin/phpunit --testsuite=Unit         # Unit only
-vendor/bin/phpunit --testsuite=Feature      # Feature only
-vendor/bin/phpunit --filter=testMethodName  # single test
-
-# Custom artisan commands (App\Console\Commands)
-php artisan command:AggregateArtist   # aggregate top artists from Spotify
-php artisan command:AggregateTrack    # aggregate top tracks from Spotify (via routes/console, no signature set explicitly beyond class)
-php artisan command:PushMessage       # push a LINE message to hardcoded LINE_USER_ID list
+# front — hot-reloads on :5173, proxies /api and /sanctum to apache
+docker compose exec front npm run dev
+docker compose exec front npm run build                # type-checks, then builds into ../public/
 ```
 
-There is no linter/formatter configured beyond `.editorconfig`.
+Custom artisan commands (`app/Console/Commands`): `command:AggregateArtist`, `command:AggregateTrack` (also triggerable via the API, see below), `command:PushMessage` (LINE push to a hardcoded user list).
+
+There is no linter/formatter configured beyond `.editorconfig` (PHP) and TypeScript's own type-checking (front).
 
 ## Architecture
 
-Layering, in order of preference for new code — **Controller → UseCase/Service → Repository → Eloquent Model**:
+### Backend (`app/`) — clean architecture, one directory per layer
 
-- `app/Http/Controllers` — thin controllers. CMS-facing ones live under `Controllers/Cms`, JSON API ones under `Controllers/Api`.
-- `app/UseCases` — single-action classes (`__invoke`) that orchestrate one flow, e.g. `App\UseCases\Aggregate\Artist`/`Track` (called from `AggregateController`), `GetSpotifyAccessToken`, `GetSpotifyAuthorizationCode`.
-- `app/Services` — reusable business logic shared across use cases/controllers, e.g. `SpotifyApiService` (wraps `jwilsson/spotify-web-api-php`, handles token refresh), `AggregateService` (turns raw Spotify API payloads into arrays for persistence), `Cms\StockService`, `TableService`.
-- `app/Repositories` — one per Eloquent model, DB access only (`ArtistRepository`, `AlbumRepository`, `TokenRepository`, `TopArtistRepository`, `TopTrackRepository`, `ArtistGenreRepository`, `ArtistGenreMapRepository`, `MyAlbumRepository`).
-- `app/Models` — Eloquent models, kept thin under the new pattern.
+```
+Domain/<Feature>/Repositories/*Interface.php   # contracts only, zero Eloquent/Laravel deps
+Application/Services/*, Application/UseCases/<Feature>/*Aggregation*Case.php   # orchestration, depends only on Domain interfaces
+Infrastructure/Persistence/Eloquent/Models/*   # Eloquent models — schema config only, no business logic
+Infrastructure/Persistence/Eloquent/Repositories/*   # Domain interface implementations
+Infrastructure/ExternalServices/Spotify/SpotifyApiClient.php   # implements Domain\Spotify\SpotifyClientInterface, wraps jwilsson/spotify-web-api-php
+Infrastructure/ExternalServices/Line/LineMessagingClient.php   # implements Domain\Line\LineMessagingClientInterface, wraps linecorp/line-bot-sdk
+Presentation/Http/Controllers/Api/*   # thin controllers: validate → call UseCase/Service → return JSON
+Presentation/Http/Requests/*, Presentation/Http/Resources/*
+Providers/RepositoryServiceProvider.php   # binds every Domain interface to its Infrastructure implementation (registered in config/app.php)
+```
 
-**The codebase is mid-migration and both styles coexist** — check which layer you're touching before copying a pattern from a neighboring file:
-- New/refactored code: constructor property promotion, typed params/returns, camelCase methods, DI via `App\Services\*Service` and `App\Repositories\*Repository`. See `TokenController`, `AggregateController`, `UseCases/Aggregate/*`, `Services/SpotifyApiService`, `Repositories/ArtistRepository`.
-- Legacy (not-yet-migrated) code: `App\Library\SpotifyApi` / `App\Library\LineMessageApi`, snake_case methods, business logic embedded directly in Eloquent models (e.g. `App\Models\Artist::set_artist_array`, `insert_update_artist`), commands/controllers instantiating models directly (`new Models\Artist()`) instead of via DI. See `LineWebhookController`, `Console/Commands/aggregate/AggregateArtist`, `Console/Commands/line/PushMeaasge`.
-- When extending existing legacy code, matching its existing style is fine; when adding genuinely new functionality, follow the new (Service/Repository) pattern instead of `App\Library`.
-- Some in-progress files are inconsistent/broken (e.g. `App\Services\AggregateService::convertMyTopTrackToArrayBySpotifyApi` and `App\UseCases\Aggregate\Track` reference undefined variables/models — this is unfinished migration work, not a regression to silently "fix" by guessing intent without checking with the user first).
+`<Feature>` = Artist, Track, Album, MyAlbum, ArtistGenre, ArtistGenreMap, TopArtist, TopTrack, Token. Every repository follows the same pattern — one interface in `Domain`, one Eloquent-backed implementation in `Infrastructure` — so use `ArtistRepositoryInterface`/`Infrastructure/.../ArtistRepository` as the template for any new one.
 
-### Spotify integration
+**Framework-conventional paths stay put** — `app/Console/Commands`, `app/Http/Kernel.php`, `app/Http/Middleware`, `app/Providers`, `app/Exceptions` are unchanged Laravel locations, not part of the Domain/Application/Infrastructure/Presentation split (Console commands are thin wrappers that resolve an `Application\UseCases\*` from the container and invoke it).
 
-- `config/spotify.php` holds `CLIENT_ID`/`CLIENT_SECRET`/`REDIRECT_URI`/`scope`, sourced from `SPOTIFY_CLIENT_ID`/`SPOTIFY_CLIENT_SECRET` env vars.
-- Auth flow: `GET /token` (`TokenController`, guarded by `auth.very_basic`) — no `code` param redirects to Spotify's authorize URL; with a `code`, exchanges it for tokens via `SpotifyApiService::getAccessToken`.
-- Tokens are stored per user in the `token` table via `TokenRepository`/`Token` model, and refreshed on-demand (`SpotifyApiService::refreshAccessToken`, triggered by catching the "access token expired" exception from `jwilsson/spotify-web-api-php`).
-- All current flows use a single hardcoded user, `USER_ID = 1` (see constants in `TokenController`, `AggregateController`, `LineWebhookController`, `Console/Commands/aggregate/*`) — this is not a multi-tenant app today.
+Spotify IDs (`spotify_id` columns/params) are base62 **strings** (`varchar(25)`), never cast to `int` — this was a real bug fixed during the clean-architecture rewrite (`SpotifyWebAPI` calls would fatal on non-numeric IDs otherwise).
 
-### Aggregation flow
+### Frontend (`front/`) — Vite + React + TypeScript SPA
 
-`GET /aggregate/artist` and `/aggregate/track` (both behind `auth.very_basic`) trigger `UseCases\Aggregate\Artist`/`Track`, which: fetch top items from Spotify (`SpotifyApiService::getMyTop`), transform them (`AggregateService`), upsert artists/genres/genre-mappings (`*Repository::upsert*`), and record ranked results into `top_artist`/`top_track` tables. The equivalent legacy path is the `command:AggregateArtist` console command.
-
-### LINE bot
-
-`POST /api/webhook` → `LineWebhookController::webhook`, using `linecorp/line-bot-sdk` via `App\Library\LineMessageApi`. Verifies the LINE signature, parses events, and replies based on keyword matching on the incoming text (`おすすめ：`, `新着`, `注目プレイリスト`, `help`, etc. — see the `*_SEARCH_WORD` constants). Recommendation replies pull from the `top_artist`/`top_track` tables populated by the aggregation flow above. `config/my-app.php` holds `LINE_ACCESS_TOKEN`/`LINE_CHANNEL_SECRET` (from env).
-
-### CMS
-
-`Controllers/Cms/TopController` renders the top artist/track rankings (`resources/views/top.blade.php`). `Controllers/Cms/StockController` + `Services/Cms/StockService` manage a personal album "stock" list, backed by `my_album`/`album` tables, with search against both the local DB and the Spotify API directly (`searchAlbumFromSpotify`). CMS UI is built on `jeroennoten/laravel-adminlte`.
+- `src/api/` — one module per backend feature (`auth.ts`, `rankings.ts`, `stock.ts`, `spotify.ts`, `aggregate.ts`) wrapping a shared `axios` instance (`client.ts`) configured for Sanctum's cookie-based SPA auth (`withXSRFToken`, `ensureCsrfCookie()` hits `/sanctum/csrf-cookie` before login).
+- `src/auth/AuthContext.tsx` + `RequireAuth.tsx` — session state and route guarding; unauthenticated users are redirected to `/login`.
+- `src/pages/` — one page per feature area (`RankingsPage`, `StockPage`, `SpotifyConnectPage`/`SpotifyCallbackPage`, `AggregatePage`, `LoginPage`).
+- Dev server proxies `/api` and `/sanctum` to the `apache` container (see `vite.config.ts`) so the browser only ever talks to one origin — no CORS config needed in either dev or the production build.
+- **Build output goes straight into `../public/`** (Laravel's `public/`) with `emptyOutDir: false`, so apache can serve the SPA and the API from the same `DocumentRoot`. Never set `emptyOutDir: true` — it would delete Laravel's `index.php`/`.htaccess`.
 
 ### Auth
 
-Everything under the main `web` route group (`/`, `/token`, `/aggregate/*`, `/cms*`) is protected by the `auth.very_basic` middleware (`olssonm/l5-very-basic-auth`), configured in `config/very_basic_auth.php`, active only in the `production` env. This is HTTP Basic Auth guarding the whole app, separate from Laravel's normal `auth`/session-based login scaffolding (which also exists — `Http/Controllers/Auth/*` — but isn't wired into any active routes in `routes/web.php`).
+Laravel Sanctum, SPA/cookie mode (not Basic Auth — that was removed along with `olssonm/l5-very-basic-auth`). `routes/api.php`: `POST /api/login` is public; everything else except `/api/webhook` (LINE, signature-verified) and `/api/spotify/callback` (OAuth redirect, hit directly by the browser outside any SPA session) sits behind `auth:sanctum`. One admin user is seeded by `database/seeders/AdminUserSeeder.php` (credentials via `ADMIN_EMAIL`/`ADMIN_PASSWORD` env vars). `SANCTUM_STATEFUL_DOMAINS` must include whatever host:port the browser actually uses (`localhost:1111` for the apache-served build, `localhost:5173` for the Vite dev server) — Sanctum's default domain list does **not** include either, so this must be set explicitly in `.env`.
+
+### Spotify integration
+
+- `config/spotify.php`: `CLIENT_ID`/`CLIENT_SECRET` from env, `REDIRECT_URI` defaults to `{APP_URL}/api/spotify/callback` (override via `SPOTIFY_REDIRECT_URI`; must match what's registered in the Spotify Developer Dashboard).
+- Flow: React's `SpotifyConnectPage` calls `GET /api/spotify/authorize-url` (returns the Spotify authorize URL as JSON) and does `window.location.href = url`; Spotify redirects the browser to `GET /api/spotify/callback` (`SpotifyAuthController`, outside `auth:sanctum` since it's a top-level browser navigation, not an XHR), which exchanges the code and redirects to `{FRONTEND_URL}/spotify/callback?status=success|error`.
+- Tokens are stored per user in the `token` table (`TokenRepositoryInterface`) and refreshed on-demand (`SpotifyApiClient::refreshAccessToken`, triggered by catching the "access token expired" exception).
+- Everything is still single-user: `USER_ID = 1` is hardcoded in the relevant controllers/console commands.
+
+### Aggregation flow
+
+`POST /api/aggregate/artist` / `/api/aggregate/track` (also `command:AggregateArtist`/`command:AggregateTrack` from the CLI) run `Application\UseCases\Aggregation\AggregateArtistUseCase`/`AggregateTrackUseCase`: fetch top items from Spotify, transform via `AggregateService`, upsert artists/tracks/genres/genre-mappings, and record same-day-replaced snapshots into `top_artist`/`top_track`. Both Artist and Track flows are fully implemented and share the same shape (Track used to be an unfinished stub — it was completed, including a new `TrackRepositoryInterface`, during the clean-architecture rewrite).
+
+### LINE bot
+
+`POST /api/webhook` → `LineWebhookController` (outside `auth:sanctum` — verifies the LINE signature itself via `LineMessagingClientInterface`). Replies based on keyword matching on the incoming text (`おすすめ：`, `新着`, `注目プレイリスト`, `help` — see the `*_SEARCH_WORD` constants); recommendation replies pull from the `top_artist`/`top_track` tables. `config/my-app.php` holds `LINE_ACCESS_TOKEN`/`LINE_CHANNEL_SECRET`.
 
 ### Data model
 
-Core tables (see `database/migrations`): `artist`, `album`, `track`, `artist_genre`, `artist_genre_map` (many-to-many), `top_artist`, `top_track` (dated rankings, one snapshot per day — see `AggregateService::decideTopArtist`, which deletes+replaces same-day rows), `token` (per-user Spotify tokens), `my_album` (CMS stock list), `feature_track`.
+Core tables (see `database/migrations`): `artist`, `album`, `track`, `artist_genre`, `artist_genre_map` (many-to-many), `top_artist`, `top_track` (dated rankings, one snapshot per day — deletes+replaces same-day rows), `token` (per-user Spotify tokens), `my_album` (stock list), `users`/`personal_access_tokens` (Sanctum). `feature_track` exists in migrations but is currently unused (its console command was legacy/broken and was removed rather than fixed — no code populates or reads it today).
+
+### Testing
+
+`tests/Feature/AuthTest.php` covers the Sanctum login/logout/unauthenticated flow — use it as the template for new feature tests (needs `$this->withHeader('Origin', ...)`, set globally in `tests/TestCase.php`, since Sanctum only attaches session middleware to requests it recognizes as coming from the frontend). **phpunit runs against an isolated in-memory SQLite DB** (`phpunit.xml`'s `DB_CONNECTION`/`DB_DATABASE` overrides) — this is deliberate, `RefreshDatabase` previously wiped the shared dev MySQL database when pointed at it.

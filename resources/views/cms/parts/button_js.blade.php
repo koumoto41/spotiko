@@ -1,1 +1,0 @@
-<button type="button" class="btn btn-{{ $type }} btn-block text-white {{ $class }}" {!! $extra ?? '' !!}>{{ $text }}</button>

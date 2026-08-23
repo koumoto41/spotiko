@@ -1,1 +1,0 @@
-<p><img src="{{ $url }}" class="img-responsive" style="width:64px"></p>
