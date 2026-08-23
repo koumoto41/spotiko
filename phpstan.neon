@@ -7,8 +7,5 @@ parameters:
 
     level: 5
 
-    excludePaths:
-        - app/View/Components/Adminlte/*
-
     ignoreErrors:
         - '#Unsafe usage of new static#'
