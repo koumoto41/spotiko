@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 
 export function Layout({ children }: { children: ReactNode }) {
@@ -14,12 +14,19 @@ export function Layout({ children }: { children: ReactNode }) {
   return (
     <div className="layout">
       <header className="layout-header">
-        <nav>
-          <Link to="/">ランキング</Link>
-          <Link to="/cms/stock">ストック</Link>
-          <Link to="/spotify/connect">Spotify連携</Link>
-          <Link to="/aggregate">集計</Link>
-        </nav>
+        <div className="layout-brand-group">
+          <Link to="/" className="layout-brand">
+            Spotiko
+          </Link>
+          <nav>
+            <NavLink to="/" end>
+              ランキング
+            </NavLink>
+            <NavLink to="/cms/stock">ストック</NavLink>
+            <NavLink to="/spotify/connect">Spotify連携</NavLink>
+            <NavLink to="/aggregate">集計</NavLink>
+          </nav>
+        </div>
         {user && (
           <div className="layout-user">
             <span>{user.name}</span>
